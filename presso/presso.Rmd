@@ -5,10 +5,12 @@ author: "Casper Hart"
 date: "2022-03-25"
 output:
   xaringan::moon_reader:
+    css: [default, mystyle.css]
     lib_dir: libs
     self_contained: true
     nature:
       countIncrementalSlides: false
+      highlightLines: true
       ratio: "16:9"
       navigation:
         scroll: false
@@ -16,14 +18,14 @@ output:
 
 # Tours in R
 
-The {tourr} package has a comprehensive set of tour path generators and display methods, with some limitations:
+The `{tourr}` package has a comprehensive set of tour path generators and display methods, with some limitations:
 
 - Portability
 - Interactivity
 - Performance
 - Extensibility
 
-We want to address these limitations...
+To address these limitations, we take a _detour_ in to web technologies...
 
 ---
 
@@ -33,8 +35,8 @@ We want to address these limitations...
 knitr::opts_chunk$set(comment = "#>", out.width = "100%")
 
 library(tourr)
+library(detourr)
 suppressPackageStartupMessages(library(tidyverse))
-X <- geozoo::cube.face()$points
 ```
 
 ```{r, echo = FALSE}
@@ -43,57 +45,72 @@ knitr::include_graphics("tour_html.gif")
 
 ---
 
-# Introducing {detourr}
+.center[
+<img src="detourr_logo.png" height="400" />
+  .bigBlock[
+    AHEAD
+  ]
+  .bigBlock[
+    FOLLOW <img src="right_arrow.png" height="30" /> 
+    <img src="github_logo.png" height="30" /> 
+    <img src="twit.svg" height="30" /> @casperhart
+  ]
+]
+---
+
+# Introducing `{detourr}`
 
 ```{r, echo=FALSE, message=FALSE}
 library(detourr)
-p <- detour(
+detour(
   olive,
   tour_aes(projection = palmitic:eicosenoic, colour = region)
 ) |>
   show_scatter(alpha = 0.5)
-p
 ```
 
 ---
 
 # Portability
 
-{detourr} visuals are written in TypeScript / JavaScript, using {HTMLWidgets} to work with R. It runs well with:
+`{detourr}` visuals are written in TypeScript / JavaScript, using `{HTMLWidgets}` to work with R. It runs well with:
 
 - Any browser
 - The RStudio viewer
 - VScode webview
 - Knitr (with html output)
 - Shiny
-- {xarignan} slides
+- `{xaringan}` slides
 
 ---
 
-# Interactivity - orbit controls
+# Interactivity
 
-```{r, echo=FALSE, message=FALSE}
+.pull-left[
+  .big[
+- Orbit Controls
+- Selection and Brushing
+- Timeline
+- Labels
+  ]
+]
+
+
+.pull-right[
+```{r, echo=FALSE, message=FALSE, fig.align="right"}
 library(detourr)
-p <- detour(
+detour(
   olive,
   tour_aes(projection = palmitic:eicosenoic, colour = region, label = c(region, area))
 ) |>
   tour_path(grand_tour(3)) |>
   show_scatter(alpha = 0.5)
-p
 ```
+]
 
 ---
 
-# Interactivity - selection and brushing
-
-```{r, echo=FALSE}
-p
-```
-
----
-
-# Linked selection with {crosstalk}
+# Linked selection with `{crosstalk}`
 
 ```{r, echo=FALSE}
 library(detourr)
@@ -121,51 +138,26 @@ bscols(
 
 ---
 
-# Interactivity - timeline
+# Linked selection with `{crosstalk}`
 
-```{r, echo=FALSE}
-p
-```
+Compatible with:
 
----
-
-# Performance 
-
-.pull-left[
-## Scripting
-
-- Modern Javascript JIT compilation
-- Tensorflow.js for linear algebra (WebAssembly backend coming soon)
-
-## Rendering
-
-- Three.js / WebGL for GPU-accelerated rendering
-
-]
-
-
-.pull-right[
-<img src="rick-bobby-will-ferrell.gif" />
-<img src="v8.svg" width="100" height="100" />
-<img src="spidermonkey.svg" width="100" height="100" />
-<img src="tensorflow.svg" width="100" height="100" />
-<img src="webassembly.svg" width="100" height="100" />
-<img src="webgl.svg" height="100" />
-<img src="three.svg" height="100" />
-]
+- `plotly/plotly.R`
+- `rstudio/leaflet`
+- `rstudio/DT`
 
 ---
 
 # User API
 
-{detour} has a declarative API for building a tour visual. Under the hood the `detour` object is stored as a `tibble`:
+{detourr} has a declarative API for building a tour visual. Instantiate a `detour` object with `detour()`:
 
-```{r}
-# remotes::install_github("casper-hart/detour@v0.0.2")
+```{r, eval=FALSE}
+remotes::install_github("casperhart/detour@v0.0.2")
 ```
 
 ```{r}
-detour(
+detour( #<<
   olive,
   tour_aes(projection = palmitic:eicosenoic, colour = region)
 )
@@ -173,33 +165,31 @@ detour(
 
 ---
 
-# User API
+# User API: tour path
 
 ```{r}
 detour(
   olive,
   tour_aes(projection = palmitic:eicosenoic, colour = region)
-) |> tour_path(grand_tour(3))
+) |> tour_path(grand_tour(3)) #<<
 ```
 
 ---
 
-# User API
+# User API: display methods
 
 ```{r}
-p <- detour(
+detour(
   olive,
   tour_aes(projection = palmitic:eicosenoic, colour = region)
 ) |>
   tour_path(grand_tour(3)) |>
-  show_scatter()
-
-class(p)
+  show_scatter(height = "50%") #<<
 ```
 
 ---
 
-# Displays - `show_scatter()`
+# Displays: `show_scatter()`
 
 ```{r, echo=FALSE}
 detour(
@@ -216,7 +206,7 @@ detour(
 
 ---
 
-# Displays - `show_sage()`
+# Displays: `show_sage()`
 
 ```{r, echo=FALSE}
 library(detourr)
@@ -248,7 +238,7 @@ detour(
 
 ---
 
-# Displays - `show_slice()`
+# Displays: `show_slice()`
 
 ```{r, echo=FALSE, message=FALSE}
 x <- geozoo::roman.surface(n = 10000)$points |>
@@ -261,4 +251,83 @@ detour(x, tour_aes(projection = everything())) |>
 
 ---
 
+# Performance: scripting
+
+Javascript is... pretty quick!
+
+<img src="chrome_speed.png" width="800"/><img src="v8.svg" width="150" height="150" />
+
+---
+
+# Performance: matrix operations
+
+Vanilla JavaScript is not ideal for matrix operations... 
+--
+but **TensorFlow.js** is.
+
+--
+
+Backend options:
+- CPU
+
+--
+- WebAssembly (WASM)
+
+--
+- WASM + SIMD
+
+--
+- WASM + SIMD + threads
+
+--
+- WebGL / GPU Acceleration?
+
+---
+
+# Performance: rendering
+
+.pull-left[
+- 1x SVG 
+- 10x HTML5 Canvas + 2D
+- 100x HTML5 Canvas + WebGL
+
+WebGL rendering is used for `scatter`, `slice`, and `sage` displays via `Three.JS`
+
+New displays can use any of these.
+]
+
+
+.pull-right[
+<img src="rick-bobby-will-ferrell.gif" width="500" />
+<img src="html5.svg" height="100" />
+<img src="webgl.svg" height="100" />
+<img src="three.svg" height="100" />
+]
+
+---
+
 # Extensibility
+
+- Written in TypeScript
+
+--
+- Existing widgets can be extended through inheritance
+
+--
+- Controls and timeline are reusable
+
+--
+- `webpack-dev-server` for hot reloading during development
+
+--
+- Independent widgets for each display method. 
+
+--
+- Tour paths compatible with `{tourr}`
+
+
+---
+
+.center2[
+<img src="thanks.gif" />
+]
