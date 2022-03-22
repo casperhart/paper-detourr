@@ -2,10 +2,10 @@
 title: "{detourr}"
 subtitle: "Interactive and performant tour visuals for the web"
 author: "Casper Hart"
-date: "2022-03-25"
+date: "2022-03-25"  
 output:
   xaringan::moon_reader:
-    css: [default, mystyle.css]
+    css: ["xaringan-themer.css","mystyle.css"]
     lib_dir: libs
     self_contained: true
     nature:
@@ -15,6 +15,20 @@ output:
       navigation:
         scroll: false
 ---
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  base_color = "#1c5253",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google = google_font("Montserrat", "300", "300i"),
+  code_font_google = google_font("Fira Mono")
+)
+```
+
+```{r xaringan-panelset, echo=FALSE}
+xaringanExtra::use_panelset()
+```
 
 # Tours in R
 
@@ -32,7 +46,7 @@ To address these limitations, we take a _detour_ in to web technologies...
 #  ... and we want to avoid this
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-knitr::opts_chunk$set(comment = "#>", out.width = "100%")
+knitr::opts_chunk$set(comment = "#>", out.width = "100%", fig.retina = 2)
 
 library(tourr)
 library(detourr)
@@ -47,10 +61,10 @@ knitr::include_graphics("tour_html.gif")
 
 .center[
 <img src="detourr_logo.png" height="400" />
-  .bigBlock[
+  .strong[
     AHEAD
   ]
-  .bigBlock[
+  .strong[
     FOLLOW <img src="right_arrow.png" height="30" /> 
     <img src="github_logo.png" height="30" /> 
     <img src="twit.svg" height="30" /> @casperhart
@@ -150,42 +164,97 @@ Compatible with:
 
 # User API
 
-{detourr} has a declarative API for building a tour visual. Instantiate a `detour` object with `detour()`:
+`{detourr}` has a declarative API for building a tour visual. Instantiate a `detour` object with `detour()`:
+
+.panelset[
+.panel[.panel-name[R Code]
 
 ```{r, eval=FALSE}
 remotes::install_github("casperhart/detour@v0.0.2")
 ```
 
-```{r}
+```{r, eval=FALSE}
+detour( #<<
+  olive,
+  tour_aes(
+    projection = palmitic:eicosenoic,
+    colour = region
+  )
+)
+```
+
+]
+
+.panel[.panel-name[Output]
+
+```{r, echo=FALSE}
 detour( #<<
   olive,
   tour_aes(projection = palmitic:eicosenoic, colour = region)
 )
 ```
 
+]
+]
+
 ---
 
 # User API: tour path
 
-```{r}
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r, eval=FALSE}
+detour(
+  olive,
+  tour_aes(projection = palmitic:eicosenoic, colour = region)
+) |> tour_path(grand_tour(3)) #<<
+```
+]
+
+.panel[.panel-name[Output]
+
+```{r, echo=FALSE}
 detour(
   olive,
   tour_aes(projection = palmitic:eicosenoic, colour = region)
 ) |> tour_path(grand_tour(3)) #<<
 ```
 
+]
+]
+
+
 ---
 
 # User API: display methods
 
-```{r}
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r, eval=FALSE}
 detour(
   olive,
   tour_aes(projection = palmitic:eicosenoic, colour = region)
 ) |>
   tour_path(grand_tour(3)) |>
-  show_scatter(height = "50%") #<<
+  show_scatter() #<<
 ```
+]
+
+.panel[.panel-name[Output]
+
+```{r, echo=FALSE}
+detour(
+  olive,
+  tour_aes(projection = palmitic:eicosenoic, colour = region)
+) |>
+  tour_path(grand_tour(3)) |>
+  show_scatter(height = "400px")
+```
+
+]
+]
 
 ---
 
@@ -287,9 +356,9 @@ Backend options:
 # Performance: rendering
 
 .pull-left[
-- 1x SVG 
-- 10x HTML5 Canvas + 2D
-- 100x HTML5 Canvas + WebGL
+- SVG 
+- HTML5 Canvas + 2D
+- HTML5 Canvas + WebGL
 
 WebGL rendering is used for `scatter`, `slice`, and `sage` displays via `Three.JS`
 
@@ -308,19 +377,19 @@ New displays can use any of these.
 
 # Extensibility
 
-- Written in TypeScript
+- Written in **TypeScript**
 
 --
-- Existing widgets can be extended through inheritance
+- Existing widgets can be **extended** through inheritance
 
 --
-- Controls and timeline are reusable
+- Controls and timeline are **reusable**
 
 --
 - `webpack-dev-server` for hot reloading during development
 
 --
-- Independent widgets for each display method. 
+- **Independent** widgets for each display method. 
 
 --
 - Tour paths compatible with `{tourr}`
