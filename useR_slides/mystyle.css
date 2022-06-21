@@ -1,0 +1,14 @@
+.big {
+  font-size: 35px;
+  font-family: sans-serif;
+}
+
+strong {
+  font-weight: 500;
+}
+
+.bigBlock {
+  font-size: 40px;
+  font-weight: bold;
+  font-family: sans-serif;
+}

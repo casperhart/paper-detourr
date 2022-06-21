@@ -1,0 +1,755 @@
+---
+title: "{detourr}"
+subtitle: "Interactive and performant tour visuals for the web"
+author: "Casper Hart"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    css: ["xaringan-themer.css","mystyle.css"]
+    lib_dir: libs
+    #self_contained: true
+    nature:
+      countIncrementalSlides: false
+      highlightLines: true
+      ratio: "16:9"
+      navigation:
+        scroll: false
+---
+
+<link href='//fonts.googleapis.com/css?family=Montserrat:thin,extra-light,light,100,200,300,400,500,600,700,800' 
+rel='stylesheet' type='text/css'>
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+library(tidyverse)
+library(RefManageR)
+
+pal <- unname(palette.colors())[-1]
+
+options(
+  knitr.graphics.auto_pdf = TRUE,
+  tibble.print_min = 5,
+  ggplot2.discrete.fill = pal,
+  ggplot2.discrete.colour = pal
+)
+style_mono_accent(
+  base_color = "#1c5253",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google = google_font("Montserrat", "300", "300i"),
+  code_font_google = google_font("Fira Mono")
+)
+
+knitr::opts_chunk$set(comment = "#>", out.width = "100%")
+library(tourr)
+library(detourr)
+library(palmerpenguins)
+
+suppressPackageStartupMessages(library(tidyverse))
+
+penguins <- penguins |>
+  drop_na(species, bill_length_mm:body_mass_g) |>
+  mutate_at(vars(bill_length_mm:body_mass_g), scale)
+```
+
+```{r xaringan-panelset, echo=FALSE}
+xaringanExtra::use_panelset()
+```
+
+# Background on tours
+
+--
+
+A tour is sequence of projections of data displayed as an animation
+
+--
+
+1. Choose a sequence of projections and interpolate between them; The **tour path** $\mathbf{A}_1 \dots \mathbf{A}_t$
+
+--
+
+2. Display the projected data $\mathbf{Y}_i = \mathbf{XA}_i$ as an animation; The **display method**
+
+--
+
+Example **{tourr}**:
+
+```{r, echo=FALSE, eval=FALSE}
+library(tourr)
+library(palmerpenguins)
+render_gif(penguins[, 3:6], grand_tour(2), display_xy(col = penguins$species), "penguins.gif")
+```
+
+<div width="100%" style="display: flex; justify-content: center">
+  <img src="penguins.gif" height="350"/> 
+</div>
+---
+
+class: center, inverse, middle, title-slide
+
+# Motivation
+
+---
+
+#  Interactivity 😕
+
+<div width="100%" style="display: flex; justify-content: center">
+  <img src="penguins.gif" height="450"/> 
+</div>
+
+---
+
+#  Performance 🙁
+
+```{r, eval=FALSE, echo=FALSE}
+library(detourr)
+library(tourr)
+library(tidyverse)
+mnist_embeddings_8d |>
+  select(starts_with("X")) |>
+  animate(col = mnist_embeddings_8d$label, display = display_xy(col = mnist_embeddings_8d$label), fps = 30)
+```
+
+
+<div width="100%" style="display: flex; justify-content: center">
+  <img src="tourr_performance.gif" height="450" />
+</div>
+
+---
+
+#  Portability... 😭
+
+```{r, echo = FALSE}
+knitr::include_graphics("tour_html.gif")
+```
+
+---
+
+class: center, middle, inverse, title-slide
+
+#  How do we get around these limitations? 
+# 🚧 🤔 🚧
+
+---
+
+class: center, middle
+
+<img src="detourr_logo.png" height="400" />
+  .strong[
+    AHEAD
+  ]
+  .strong[
+    FOLLOW <img src="right_arrow.png" height="30" /> 
+    <img src="github_logo.png" height="30" /> 
+    <img src="twit.svg" height="30" /> @casperhart
+  ]
+---
+
+# Introducing `{detourr}`
+
+```{r, echo=FALSE, message=FALSE}
+library(detourr)
+set.seed(1)
+detour(
+  penguins,
+  tour_aes(projection = bill_length_mm:body_mass_g, colour = species)
+) |>
+  show_scatter(paused = FALSE)
+```
+
+---
+
+# Interactivity 😍
+
+.pull-left[
+  .big[
+- Orbit Controls
+- Selection and Brushing
+- Timeline
+- Labels
+  ]
+]
+
+
+.pull-right[
+```{r, echo=FALSE, message=FALSE, fig.align="right"}
+library(detourr)
+p <- detour(
+  penguins,
+  tour_aes(
+    projection = bill_length_mm:body_mass_g, colour = species,
+    label = c(species, island, sex, year)
+  )
+) |>
+  tour_path(grand_tour(3)) |>
+  show_scatter()
+p
+```
+]
+
+---
+
+# Portability 🥰
+
+`{detourr}` visuals are written in TypeScript / JavaScript, using `{HTMLWidgets}` to work with R. It runs well with:
+
+- Any browser 
+- RStudio
+- VScode
+- Knitr (with html output)
+- Shiny
+- `{xaringan}` slides
+
+---
+
+# Performance 🥹
+
+```{r, echo=FALSE}
+detour(
+  mnist_embeddings_8d,
+  tour_aes(
+    projection = starts_with("X"),
+    colour = label,
+    label = c(label, id)
+  )
+) |>
+  tour_path(grand_tour(3)) |>
+  show_scatter()
+```
+
+---
+
+# Linked selection with `{crosstalk}` 😮
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(detourr)
+library(crosstalk)
+library(plotly)
+
+cols <- viridisLite::viridis(3)[penguins$species]
+
+shared_penguins <- SharedData$new(penguins)
+
+a <- plot_ly(shared_penguins,
+  x = ~bill_depth_mm, y = ~bill_length_mm,
+  width = "100%",
+  color = ~species,
+  colors = viridisLite::viridis(3)
+) %>%
+  add_markers() %>%
+  highlight(on = "plotly_selected", dynamic = TRUE)
+
+b <- detour(
+  shared_penguins, tour_aes(projection = bill_length_mm:body_mass_g, colour = species)
+) |>
+  show_scatter(width = "100%", height = "450px")
+
+bscols(
+  a,
+  b
+)
+```
+
+---
+
+# Linked selection with `{crosstalk}` 😮 
+
+Compatible with:
+
+- `plotly/plotly.R`
+- `rstudio/leaflet`
+- `rstudio/DT`
+- `glin/reactable`
+- `jbkunst/highcharter`
+
+---
+
+class: center, inverse, middle, title-slide
+
+# User API 
+# 👩‍💻
+
+---
+
+# Data and aesthetics 👩‍💻
+
+`{detourr}` has a declarative API for building a tour visual. Instantiate a `detour` object with `detour()`:
+
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r, eval=FALSE}
+install.packages("detourr") # -or-
+remotes::install_github("casperhart/detourr")
+```
+
+```{r, eval=FALSE}
+detour( #<<
+  penguins,
+  tour_aes(projection = bill_length_mm:body_mass_g, colour = species)
+)
+```
+
+]
+
+.panel[.panel-name[Output]
+
+```{r, echo=FALSE}
+detour( #<<
+  penguins,
+  tour_aes(projection = bill_length_mm:body_mass_g, colour = species)
+)
+```
+
+]
+]
+
+---
+
+# Tour path 🛣
+
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r, eval=FALSE}
+detour(
+  penguins,
+  tour_aes(projection = bill_length_mm:body_mass_g, colour = species)
+) |> tour_path(grand_tour(3)) #<<
+```
+]
+
+.panel[.panel-name[Output]
+
+```{r, echo=FALSE}
+detour(
+  penguins,
+  tour_aes(projection = bill_length_mm:body_mass_g, colour = species)
+) |> tour_path(grand_tour(3)) #<<
+```
+
+]
+]
+
+---
+
+# Display 📺
+
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r, eval=FALSE}
+detour(
+  penguins,
+  tour_aes(projection = bill_length_mm:body_mass_g, colour = species)
+) |>
+  tour_path(grand_tour(3)) |>
+  show_scatter() #<<
+```
+]
+
+.panel[.panel-name[Output]
+
+```{r, echo=FALSE}
+detour(
+  penguins,
+  tour_aes(projection = bill_length_mm:body_mass_g, colour = species)
+) |>
+  tour_path(grand_tour(3)) |>
+  show_scatter(height = "450px")
+```
+
+]
+]
+
+---
+
+class: center, middle
+
+# data |> tour path |> display method
+
+---
+
+class: center, middle
+
+# detour() |> tour\_path() |> show\_*()
+
+---
+
+class: center, inverse, middle, title-slide
+
+# Display methods 📺
+
+---
+
+# `show_scatter()` 📺
+
+```{r, echo=FALSE, message=FALSE}
+x <- geozoo::cube.solid.grid(4, 1)
+
+x$points |>
+  as_tibble(.name_repair = "unique") |>
+  detour(tour_aes(projection = everything())) |>
+  tour_path(grand_tour(2)) |>
+  show_scatter(edges = x$edges, axes = FALSE)
+```
+
+---
+
+# `show_scatter()` 📺
+
+```{r, echo=FALSE}
+library(dplyr)
+data(pdfsense, package = "liminal")
+
+pcs <- pdfsense |>
+  select(X1:X56) |>
+  prcomp()
+
+pcs <- as_tibble(pcs$x) |>
+  select(PC1:PC6)
+
+plot_data <- pdfsense |>
+  select(-(X1:X56)) |>
+  mutate(Type = as.character(Type)) |>
+  bind_cols(pcs)
+
+detour(
+  plot_data,
+  tour_aes(
+    projection = starts_with("PC"),
+    colour = Type, label = c(InFit, Type, ID, pt, x, mu)
+  )
+) |>
+  tour_path(grand_tour(3)) |>
+  show_scatter(axes = FALSE, alpha = 0.7)
+```
+
+---
+
+# `show_sage()` 🪴
+
+```{r, echo=FALSE}
+detour(
+  mnist_embeddings_8d,
+  tour_aes(
+    projection = starts_with("X"),
+    colour = label,
+    label = c(label, id)
+  )
+) |>
+  tour_path(grand_tour(2)) |>
+  show_sage()
+```
+
+---
+
+# `show_sage()` 🪴
+
+```{r, echo=FALSE}
+library(detourr)
+
+detour(
+  plot_data,
+  tour_aes(
+    projection = starts_with("PC"),
+    colour = Type, label = c(InFit, Type, ID, pt, x, mu)
+  )
+) |>
+  tour_path(grand_tour(3)) |>
+  show_sage(axes = FALSE, alpha = 0.7, gamma = 56 / 6)
+```
+
+---
+
+# `show_slice()` 🍰
+
+```{r, echo=FALSE, message=FALSE}
+x <- geozoo::roman.surface(n = 10000)$points |>
+  as_tibble(.name_repair = "unique")
+
+detour(x, tour_aes(projection = everything())) |>
+  tour_path(grand_tour(2), max_bases = 10) |>
+  show_slice(slice_relative_volume = 0.1)
+```
+
+---
+
+# `show_slice()` 🍰
+
+```{r, echo=FALSE, message=FALSE}
+detour(
+  mnist_embeddings_8d,
+  tour_aes(
+    projection = starts_with("X"),
+    colour = label,
+    label = c(label, id)
+  )
+) |>
+  tour_path(grand_tour(3), max_bases = 3) |>
+  show_slice()
+```
+
+---
+
+class: center, inverse, middle, title-slide
+
+# Performance
+# 🏎
+
+
+---
+
+# Scripting 🏎
+
+Javascript is... pretty quick!
+
+<img src="chrome_speed.png" width="800"/><img src="v8.svg" width="150" height="150" />
+
+---
+
+class: center, middle
+
+```{r dataflow, echo=FALSE, message=FALSE}
+library(grid)
+
+svg("dataflow.svg", width = 9, height = 4.5)
+
+## fill for text boxes
+purple1 <- "#d6d5e7"
+## arrows
+purple2 <- "#c5c3dc"
+# background
+purple3 <- "#f7f7fa"
+
+tbox <- function(txt, ...) {
+  grid.roundrect(
+    r = unit(2, "mm"), width = 0.7, height = 0.8,
+    gp = gpar(col = NA, fill = purple1), ...
+  )
+  grid.text(txt, gp = gpar(fontsize = 12))
+}
+
+myarrow <- function(...) {
+  grid.segments(...,
+    arrow = arrow(type = "closed", length = unit(0.1, "inches")),
+    gp = gpar(fill = purple2, col = purple2, lwd = 2)
+  )
+}
+
+grid.newpage()
+
+vp <- viewport(
+  layout = grid.layout(3, 2,
+    heights = c(0.33, 0.34, 0.33),
+    widths = 0.5
+  ), height = 0.9, y = 0, just = "bottom"
+)
+
+tl <- viewport(layout.pos.row = 1, layout.pos.col = 1, name = "topleft")
+ml <- viewport(layout.pos.row = 2, layout.pos.col = 1, name = "middleleft")
+bl <- viewport(layout.pos.row = 3, layout.pos.col = 1, name = "bottomleft")
+tr <- viewport(layout.pos.row = 1, layout.pos.col = 2, name = "topright")
+mr <- viewport(layout.pos.row = 2, layout.pos.col = 2, name = "middleright")
+br <- viewport(layout.pos.row = 3, layout.pos.col = 2, name = "bottomright")
+
+splot <- vpTree(vp, vpList(tl, ml, bl, tr, mr, br))
+
+pushViewport(splot)
+upViewport()
+
+# background rects
+grid.roundrect(
+  r = unit(3, "mm"), width = 0.4, x = 0.05, just = "left",
+  gp = gpar(col = NA, fill = purple3)
+)
+grid.roundrect(
+  r = unit(3, "mm"), width = 0.4, x = 0.95, just = "right",
+  gp = gpar(col = NA, fill = purple3)
+)
+
+# top
+seekViewport("topleft")
+tbox("Instantiate tour")
+
+# middle
+seekViewport("middleleft")
+tbox("Generate tour path")
+myarrow(
+  x0 = 0.5, y0 = unit(1.1, "npc"),
+  x1 = 0.5, y1 = unit(0.9, "npc")
+)
+
+# bottom
+seekViewport("bottomleft")
+tbox("Create and display widget", name = "tbox_bottomleft")
+myarrow(
+  x0 = 0.5, y0 = unit(1.1, "npc"),
+  x1 = 0.5, y1 = unit(0.9, "npc")
+)
+
+seekViewport("topright")
+tbox("Render points")
+
+seekViewport("bottomright")
+tbox("Calculate next frame Y=XA")
+
+seekViewport("middleright")
+
+grid.text("Animation
+loop")
+
+grid.curve(0.4, 0, 0.4, 1,
+  square = FALSE, curvature = -0.3, ncp = 10,
+  arrow = arrow(
+    type = "closed",
+    length = unit(0.1, "inches")
+  ),
+  gp = gpar(fill = purple2, col = purple2, lwd = 2)
+)
+
+
+grid.curve(0.6, 1, 0.6, 0,
+  square = FALSE, curvature = -0.3, ncp = 10,
+  arrow = arrow(
+    type = "closed",
+    length = unit(0.1, "inches")
+  ),
+  gp = gpar(fill = purple2, col = purple2, lwd = 2)
+)
+
+popViewport()
+
+myarrow(
+  0.45, 1 / 6, 0.55, 1 / 6 #
+)
+grid.text("JSON", 0.5, unit(1 / 6, "npc") + unit(0.5, "lines"), just = "bottom")
+
+popViewport()
+
+grid.text("R", 0.25, unit(0.9, "npc") + unit(0.5, "lines"), just = "bottom")
+grid.text("JavaScript", 0.75, unit(0.9, "npc") + unit(0.5, "lines"), just = "bottom")
+invisible(dev.off())
+```
+
+<img src="dataflow.svg" height="450">
+
+---
+
+# Matrix operations 🏎 
+
+**{detourr}** uses **TensorFlow.js** with the **Webassembly** backend for linear algebra operations. This uses the Google XNNPACK library, leveraging **SIMD** and **Threads**.
+
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+benchmarks <- read_tsv("backend_benchmarks.tsv")
+svg("perf-comparison.svg", width = 8, height = 4.5)
+ggplot(benchmarks, aes(x = Backend, y = `Percent Time`, fill = `Data Set`)) +
+  geom_col(position = "dodge") +
+  theme_bw() +
+  scale_y_continuous(labels = scales::label_number(suffix = "%")) +
+  theme(
+    legend.position = c(0.75, 0.75),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank()
+  ) +
+  labs(
+    title = "LinAlg Backend Performance Comparison",
+    y = "% Scripting Time"
+  )
+invisible(dev.off())
+```
+
+<img src="perf-comparison.svg" height="400" align="left" />
+<img src="tensorflow.svg" height="100" align="right" />
+<img src="webassembly.svg" height="100" align="right" />
+
+---
+
+# Rendering 🏎
+
+.pull-left[
+- 🐢 SVG is good at rendering **large** objects, but is slow when rendering **many** objects.
+
+Alternative:
+
+- 🏎 HTML5 Canvas + **WebGL** (GPU)
+
+Implemented with **Three.js**
+
+]
+
+.pull-right[
+<img src="rick-bobby-will-ferrell.gif" width="500" />
+<img src="html5.svg" height="100" />
+<img src="webgl.svg" height="100" />
+<img src="three.svg" height="100" />
+]
+
+---
+
+# Contributions welcome <img src="github_logo.png" height="40" />  
+
+--
+
+#### More visuals!
+
+--
+- density plot
+- histogram 
+- Andrew's plot 
+- PCP
+
+--
+
+#### More features!
+
+--
+
+- facetting 
+- legends
+- point symbols
+
+--
+
+#### More performance!
+
+--
+
+- WASM module for sage tour?
+- TensorFlow WebGL?
+
+---
+
+# Emojis required <img src="trollface.jpeg" height="40">
+
+<div width="100%" style="display: flex; justify-content: center">
+
+<img src=commits.png height="450">
+
+</div>
+
+<!-- Sage display: 
+Laa, Ursula, Dianne Cook, and Stuart Lee. 2021. “Burning Sage: Reversing the Curse of Dimensionality in the Visualization of High-Dimensional Data.”Journal of Computational and Graphical Statistics, 1–10.
+
+Slice display: 
+Laa, Ursula, Dianne Cook, and German Valencia. 2020. “A Slice Tour for Finding Hollowness in High-Dimensional Data.”Journal of Computational and Graphical Statistics 29 (3): 681–87.
+
+pdfsense dataset: 
+Wang, B.-T., Hobbs, T. J., Doyle, S., Gao, J., Hou, T.-J., Nadolsky, P. M., & Olness, F. I. (2018). PDFSense: Mapping the sensitivity of hadronic experiments to nucleon structure. Retrieved from <https://arxiv.org/abs/1808.07470>
+Cook, D., Laa, U., & Valencia, G. (2018). Dynamical projections for the visualization of PDFSense data. The European Physical Journal C, 78(9), 742. doi: 10.1140/epjc/s10052-018-6205-2 (URL:https://doi.org/10.1140/epjc/s10052-018-6205-2)
+
+{tourr}: Wickham, Hadley, Dianne Cook, Heike Hofmann, and Andreas Buja. 2011. “Tourr: An r Package for Exploring Multivariate Data with Projections.”Journal of Statistical Software 40: 1–18. -->
+
+---
+
+class: center, middle
+
+#### Slides:
+
+## github.com/casperhart/paper-detourr
+
+#### Package website:
+
+## casperhart.github.io/detourr
+
+<img src="github_logo.png" height="30" /> 
+<img src="twit.svg" height="30" /> @casperhart
