@@ -98,7 +98,7 @@ class: center, inverse, middle, title-slide
 
 ---
 
-#  Performance 🙁
+#  Performance ☹️
 
 ```{r, eval=FALSE, echo=FALSE}
 library(detourr)
@@ -201,7 +201,7 @@ p
 
 ---
 
-# Performance 🥹
+# Performance 😁
 
 ```{r, echo=FALSE}
 detour(
@@ -305,7 +305,7 @@ detour( #<<
 
 ---
 
-# Tour path 🛣
+# Tour path 🚴‍♀️
 
 .panelset[
 .panel[.panel-name[R Code]
@@ -395,38 +395,24 @@ x$points |>
 
 ---
 
-# `show_scatter()` 📺
+# `show_scatter()` ✨
 
 ```{r, echo=FALSE}
-library(dplyr)
-data(pdfsense, package = "liminal")
-
-pcs <- pdfsense |>
-  select(X1:X56) |>
-  prcomp()
-
-pcs <- as_tibble(pcs$x) |>
-  select(PC1:PC6)
-
-plot_data <- pdfsense |>
-  select(-(X1:X56)) |>
-  mutate(Type = as.character(Type)) |>
-  bind_cols(pcs)
-
 detour(
-  plot_data,
+  mnist_embeddings_8d,
   tour_aes(
-    projection = starts_with("PC"),
-    colour = Type, label = c(InFit, Type, ID, pt, x, mu)
+    projection = starts_with("X"),
+    colour = label,
+    label = c(label, id)
   )
 ) |>
   tour_path(grand_tour(3)) |>
-  show_scatter(axes = FALSE, alpha = 0.7)
+  show_scatter()
 ```
 
 ---
 
-# `show_sage()` 🪴
+# `show_sage()` 🌱
 
 ```{r, echo=FALSE}
 detour(
@@ -439,24 +425,6 @@ detour(
 ) |>
   tour_path(grand_tour(2)) |>
   show_sage()
-```
-
----
-
-# `show_sage()` 🪴
-
-```{r, echo=FALSE}
-library(detourr)
-
-detour(
-  plot_data,
-  tour_aes(
-    projection = starts_with("PC"),
-    colour = Type, label = c(InFit, Type, ID, pt, x, mu)
-  )
-) |>
-  tour_path(grand_tour(3)) |>
-  show_sage(axes = FALSE, alpha = 0.7, gamma = 56 / 6)
 ```
 
 ---
@@ -485,7 +453,24 @@ detour(
     label = c(label, id)
   )
 ) |>
-  tour_path(grand_tour(3), max_bases = 3) |>
+  tour_path(grand_tour(2)) |>
+  show_slice()
+```
+
+---
+
+# `show_slice()` 🍰
+
+```{r, echo=FALSE, message=FALSE}
+detour(
+  mnist_embeddings_8d,
+  tour_aes(
+    projection = starts_with("X"),
+    colour = label,
+    label = c(label, id)
+  )
+) |>
+  tour_path(grand_tour(3)) |>
   show_slice()
 ```
 
@@ -494,12 +479,11 @@ detour(
 class: center, inverse, middle, title-slide
 
 # Performance
-# 🏎
-
+# 🚗
 
 ---
 
-# Scripting 🏎
+# Scripting 🚗
 
 Javascript is... pretty quick!
 
@@ -507,135 +491,7 @@ Javascript is... pretty quick!
 
 ---
 
-class: center, middle
-
-```{r dataflow, echo=FALSE, message=FALSE}
-library(grid)
-
-svg("dataflow.svg", width = 9, height = 4.5)
-
-## fill for text boxes
-purple1 <- "#d6d5e7"
-## arrows
-purple2 <- "#c5c3dc"
-# background
-purple3 <- "#f7f7fa"
-
-tbox <- function(txt, ...) {
-  grid.roundrect(
-    r = unit(2, "mm"), width = 0.7, height = 0.8,
-    gp = gpar(col = NA, fill = purple1), ...
-  )
-  grid.text(txt, gp = gpar(fontsize = 12))
-}
-
-myarrow <- function(...) {
-  grid.segments(...,
-    arrow = arrow(type = "closed", length = unit(0.1, "inches")),
-    gp = gpar(fill = purple2, col = purple2, lwd = 2)
-  )
-}
-
-grid.newpage()
-
-vp <- viewport(
-  layout = grid.layout(3, 2,
-    heights = c(0.33, 0.34, 0.33),
-    widths = 0.5
-  ), height = 0.9, y = 0, just = "bottom"
-)
-
-tl <- viewport(layout.pos.row = 1, layout.pos.col = 1, name = "topleft")
-ml <- viewport(layout.pos.row = 2, layout.pos.col = 1, name = "middleleft")
-bl <- viewport(layout.pos.row = 3, layout.pos.col = 1, name = "bottomleft")
-tr <- viewport(layout.pos.row = 1, layout.pos.col = 2, name = "topright")
-mr <- viewport(layout.pos.row = 2, layout.pos.col = 2, name = "middleright")
-br <- viewport(layout.pos.row = 3, layout.pos.col = 2, name = "bottomright")
-
-splot <- vpTree(vp, vpList(tl, ml, bl, tr, mr, br))
-
-pushViewport(splot)
-upViewport()
-
-# background rects
-grid.roundrect(
-  r = unit(3, "mm"), width = 0.4, x = 0.05, just = "left",
-  gp = gpar(col = NA, fill = purple3)
-)
-grid.roundrect(
-  r = unit(3, "mm"), width = 0.4, x = 0.95, just = "right",
-  gp = gpar(col = NA, fill = purple3)
-)
-
-# top
-seekViewport("topleft")
-tbox("Instantiate tour")
-
-# middle
-seekViewport("middleleft")
-tbox("Generate tour path")
-myarrow(
-  x0 = 0.5, y0 = unit(1.1, "npc"),
-  x1 = 0.5, y1 = unit(0.9, "npc")
-)
-
-# bottom
-seekViewport("bottomleft")
-tbox("Create and display widget", name = "tbox_bottomleft")
-myarrow(
-  x0 = 0.5, y0 = unit(1.1, "npc"),
-  x1 = 0.5, y1 = unit(0.9, "npc")
-)
-
-seekViewport("topright")
-tbox("Render points")
-
-seekViewport("bottomright")
-tbox("Calculate next frame Y=XA")
-
-seekViewport("middleright")
-
-grid.text("Animation
-loop")
-
-grid.curve(0.4, 0, 0.4, 1,
-  square = FALSE, curvature = -0.3, ncp = 10,
-  arrow = arrow(
-    type = "closed",
-    length = unit(0.1, "inches")
-  ),
-  gp = gpar(fill = purple2, col = purple2, lwd = 2)
-)
-
-
-grid.curve(0.6, 1, 0.6, 0,
-  square = FALSE, curvature = -0.3, ncp = 10,
-  arrow = arrow(
-    type = "closed",
-    length = unit(0.1, "inches")
-  ),
-  gp = gpar(fill = purple2, col = purple2, lwd = 2)
-)
-
-popViewport()
-
-myarrow(
-  0.45, 1 / 6, 0.55, 1 / 6 #
-)
-grid.text("JSON", 0.5, unit(1 / 6, "npc") + unit(0.5, "lines"), just = "bottom")
-
-popViewport()
-
-grid.text("R", 0.25, unit(0.9, "npc") + unit(0.5, "lines"), just = "bottom")
-grid.text("JavaScript", 0.75, unit(0.9, "npc") + unit(0.5, "lines"), just = "bottom")
-invisible(dev.off())
-```
-
-<img src="dataflow.svg" height="450">
-
----
-
-# Matrix operations 🏎 
+# Matrix operations 🚗
 
 **{detourr}** uses **TensorFlow.js** with the **Webassembly** backend for linear algebra operations. This uses the Google XNNPACK library, leveraging **SIMD** and **Threads**.
 
@@ -664,14 +520,14 @@ invisible(dev.off())
 
 ---
 
-# Rendering 🏎
+# Rendering 🚗
 
 .pull-left[
 - 🐢 SVG is good at rendering **large** objects, but is slow when rendering **many** objects.
 
 Alternative:
 
-- 🏎 HTML5 Canvas + **WebGL** (GPU)
+- 🚗 HTML5 Canvas + **WebGL** (GPU)
 
 Implemented with **Three.js**
 
@@ -707,15 +563,11 @@ Implemented with **Three.js**
 - facetting 
 - legends
 - point symbols
+- antialiasing
 
 --
 
 #### More performance!
-
---
-
-- WASM module for sage tour?
-- TensorFlow WebGL?
 
 ---
 
@@ -727,17 +579,19 @@ Implemented with **Three.js**
 
 </div>
 
-<!-- Sage display: 
+---
+
+**Sage display**: 
+
 Laa, Ursula, Dianne Cook, and Stuart Lee. 2021. “Burning Sage: Reversing the Curse of Dimensionality in the Visualization of High-Dimensional Data.”Journal of Computational and Graphical Statistics, 1–10.
 
-Slice display: 
+**Slice display**:
+
 Laa, Ursula, Dianne Cook, and German Valencia. 2020. “A Slice Tour for Finding Hollowness in High-Dimensional Data.”Journal of Computational and Graphical Statistics 29 (3): 681–87.
 
-pdfsense dataset: 
-Wang, B.-T., Hobbs, T. J., Doyle, S., Gao, J., Hou, T.-J., Nadolsky, P. M., & Olness, F. I. (2018). PDFSense: Mapping the sensitivity of hadronic experiments to nucleon structure. Retrieved from <https://arxiv.org/abs/1808.07470>
-Cook, D., Laa, U., & Valencia, G. (2018). Dynamical projections for the visualization of PDFSense data. The European Physical Journal C, 78(9), 742. doi: 10.1140/epjc/s10052-018-6205-2 (URL:https://doi.org/10.1140/epjc/s10052-018-6205-2)
+**{tourr}**:
 
-{tourr}: Wickham, Hadley, Dianne Cook, Heike Hofmann, and Andreas Buja. 2011. “Tourr: An r Package for Exploring Multivariate Data with Projections.”Journal of Statistical Software 40: 1–18. -->
+Wickham, Hadley, Dianne Cook, Heike Hofmann, and Andreas Buja. 2011. “Tourr: An r Package for Exploring Multivariate Data with Projections.”Journal of Statistical Software 40: 1–18.
 
 ---
 
