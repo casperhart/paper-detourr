@@ -1,0 +1,63 @@
+---
+title: "{detourr}: Interactive and Performant Tour Animations"
+abstract: >
+  The tour provides a useful vehicle for exploring high dimensional datasets. It works by combining a sequence of projections---the tour path---in to an animation---the display method. Current display implementations in R are limited in their interactivity and portability, and give poor performance and jerky animations even for small datasets.
+
+  We take a detour into web technologies, such as Three.js and WebGL, to support smooth and performant tour visualisations. The R package {detourr} implements a set of display tools using {htmlwidgets} and TypeScript that allow for rich interactions (including orbit controls, scrubbing, and brushing) and smooth animations for large datasets. It provides a declarative R interface which is accessible to new users, and it supports linked views using {crosstalk} and {shiny}. The resulting animations are portable across a wide range of browsers and devices. We also extend the radial transformation of the Sage Tour (@laa2021burning) to 3 or more dimensions with an implementation in 3D, and provide a simplified implementation of the Slice Tour (@laa2020slice).
+draft: true
+author:  
+  # see ?rjournal_article for more information
+  - name: Casper Hart
+    affiliation: University of Auckland
+type: package
+output: 
+  rjtools::rjournal_web_article:
+    self_contained: yes
+    toc: no
+bibliography: detourr.bib
+header-includes:
+  - \usepackage{tabu}
+  - \usepackage{colortbl}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(plotly)
+library(ggplot2)
+library(palmerpenguins)
+library(tidyverse)
+library(detourr)
+library(kableExtra)
+
+# Okabe-Ito for colourblind-friendliness
+pal <- unname(palette.colors())[-1]
+
+options(
+  knitr.graphics.auto_pdf = TRUE,
+  tibble.print_min = 5,
+  ggplot2.discrete.fill = pal,
+  ggplot2.discrete.colour = pal
+)
+```
+
+```{r, child="01-introduction.Rmd"}
+```
+
+```{r, child="02-background.Rmd"}
+```
+
+```{r, child="03-software-design-implementation.Rmd"}
+```
+
+
+```{r, child="04-web-technologies.Rmd"}
+```
+
+```{r, child="06-case-study.Rmd"}
+```
+
+```{r, child="07-future-work.Rmd"}
+```
+
+```{r, child="A-appA.Rmd"}
+```
