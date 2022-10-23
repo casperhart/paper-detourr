@@ -3,10 +3,6 @@ chapter: 3
 knit: "rmarkdown::render('detourr.rmd')"
 ---
 
-\pagebreak
-
-# Conclusion and future work {#ch:futurework}
-
 In this paper we have introduced {detour} which provides interactive, performant, and portable tour visualisations from R. We accomplish these things using web technolies; TensorFlow.js (@abadi2016tensorflow) provides fast linear algebra operations through WebAssembly, Three.js provides GPU rendering via WebGL, and JavaScript & HTML enable good performance and interactive features across the board. We also provide a simplified implementation of the Slice display (@laa2020slice), and have generalised the radial transformation from the Sage display (@laa2021burning) to work with tours of 3 or more dimensions. All of this is done with an intuitive user interface which makes the software accessible to new users.
 
 Looking ahead, the priority for the next stage of development is to leverage {detourr}'s extensible design to implement additional display methods such as density plots, histograms, parallel coordinates plots, and Andrew's plot. Additional changes could also be made to allow the radial transformation of the sage display and the highlighting of points from the slice display to be incorporated in to these other display methods, rather than being limited to only the scatter plot display. This would also allow the additional information from both the sage and slice tour applied to the same visual.

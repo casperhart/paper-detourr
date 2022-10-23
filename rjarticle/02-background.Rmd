@@ -2,9 +2,6 @@
 chapter: 2
 knit: "rmarkdown::render('detourr.rmd')"
 ---
-\pagebreak
-
-# Background and related works {#ch:litreview}
 
 At its core, the tour is a sequence of projections of a data set that are combined together to form an animation. If we denote an $n \times p$ data matrix $\mathbf X$ and a $p \times d$ projection matrix $\mathbf A$, then we can denote our $n \times d$ projected data set $\mathbf Y$ as $\mathbf Y = \mathbf X \mathbf A$. 
 

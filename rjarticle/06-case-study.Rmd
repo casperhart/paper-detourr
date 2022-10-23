@@ -3,10 +3,6 @@ chapter: 3
 knit: "rmarkdown::render('detourr.rmd')"
 ---
 
-\pagebreak
-
-# Case study --- MNIST embeddings {#ch:casestudy}
-
 A common task when analysing wide or sparse data sets is to generate embeddings; finding a lower dimensional representation of high dimensional data, placing similar objects close together and dissimilar objects far apart in the embedding space. This is especially useful when dealing with text or image data.
 
 An example of this is the algorithm used for facial recognition in FaceNet (@schroff2015facenet). A neural network is trained which maps a vector representation of images of faces to a lower dimensional space. The network minimises the distance between examples of the same class and maximises distances between examples from different classes in the output space. The result is that the euclidean distance between faces can be used as a metric for face similarity, so an unknown face can be classified as belonging to a specific individual if the distance between the unknown face and one or more known faces is small.
@@ -38,9 +34,9 @@ knitr::include_graphics(
 )
 ```
 
-Using the core `show_scatter()` function to display a `grand_tour()` tour path in Figure@ref(fig:mnist-8d-scatter) we can see quite good separation between the clusters corresponding to each of the 10 digits. Despite the tour animation consisting of 10,000 data points, the animation runs smoothly at 30 FPS in Microsoft Edge on a Macbook Pro 2019. Running a performance profile of the animation indicates the CPU is idle 90% of the time while the animation is playing. The remaining time is divided between scripting (6%, including linear algebra operations), rendering (1.4%), painting (0.8%) and system (1.8%). When running the same tour on the `mnist_embeddings_32d` dataset, the animation is still quite smooth and CPU is 80% idle. 
+Using the core `show_scatter()` function to display a `grand_tour()` tour path in Figure \@ref(fig:mnist-8d-scatter) we can see quite good separation between the clusters corresponding to each of the 10 digits. Despite the tour animation consisting of 10,000 data points, the animation runs smoothly at 30 FPS in Microsoft Edge on a Macbook Pro 2019. Running a performance profile of the animation indicates the CPU is idle 90% of the time while the animation is playing. The remaining time is divided between scripting (6%, including linear algebra operations), rendering (1.4%), painting (0.8%) and system (1.8%). When running the same tour on the `mnist_embeddings_32d` dataset, the animation is still quite smooth and CPU is 80% idle. 
 
-In the lower left of Figure@ref(fig:mnist-8d-scatter) is an example of the `label` aesthetic at work. This allows the user to identify which group a set of points belongs to, as well as the precise ID of any outliers that may require further investigation. 
+In the lower left of Figure \@ref(fig:mnist-8d-scatter) is an example of the `label` aesthetic at work. This allows the user to identify which group a set of points belongs to, as well as the precise ID of any outliers that may require further investigation. 
 
 ## Sage and Slice display methods
 
@@ -82,7 +78,7 @@ detour(mnist_embeddings_32d, tour_aes(
 
 The `show_scatter()` display method gives the viewer a fairly good sense of the data set, but there is some structure that may not be obvious. The embeddings in the `mnist_embeddings_8d` and `mnist_embeddings_32d` datasets are L2 normalised, so the points sit on the surface of a unit ball in the high-dimensional space. To reveal this structure, we can use the _sage_ (@laa2021burning) or _slice_ (@laa2020slice) display methods, which are implemented as `show_sage()` and `show_slice()` respectively.
 
-The _sage_ display scales points outwards based on their radius so that the relative volume of the circle or sphere in the projected space is the same as in the original space. In the example shown in Figure@ref(fig:mnist-8d-sage), the `show_sage()` display method is used. The effect is that the projected points tend sit much closer to the surface of the unit circle, giving a much clearer view of the ball-like structure of the original data.
+The _sage_ display scales points outwards based on their radius so that the relative volume of the circle or sphere in the projected space is the same as in the original space. In the example shown in Figure \@ref(fig:mnist-8d-sage), the `show_sage()` display method is used. The effect is that the projected points tend sit much closer to the surface of the unit circle, giving a much clearer view of the ball-like structure of the original data.
 
 ```{r eval=FALSE}
 set.seed(123)
@@ -106,7 +102,7 @@ knitr::include_graphics(
 ```
 
 
-The _slice_ display highlights points based on their proximity to the projection plane. Points that are close to the projection plane are highlighted and those further away are faded out by making them transparent. In the case of the MNIST embedding data in Figure@ref(fig:mnist-8d-slice) the ball structure of the data manifests as a clear circular void in the middle of the plot, with points highlighted only towards the edges. 
+The _slice_ display highlights points based on their proximity to the projection plane. Points that are close to the projection plane are highlighted and those further away are faded out by making them transparent. In the case of the MNIST embedding data in Figure \@ref(fig:mnist-8d-slice) the ball structure of the data manifests as a clear circular void in the middle of the plot, with points highlighted only towards the edges. 
 
 ## Linked selection {#sec:casestudylinked}
 
@@ -160,7 +156,7 @@ bscols(
 knitr::include_graphics("figures/mnist/case-study-linked-brushing-full.png")
 ```
 
-Figure \@ref(fig:linked-tsne-full) shows the linked visuals in their initial state with no filtering applied. We can then use the selection tool in either of the visuals to highlight points, and see the highlighting applied to both visuals as in Figure@ref(fig:linked-tsne-selection).
+Figure \@ref(fig:linked-tsne-full) shows the linked visuals in their initial state with no filtering applied. We can then use the selection tool in either of the visuals to highlight points, and see the highlighting applied to both visuals as in Figure \@ref(fig:linked-tsne-selection).
 
 ```{r linked-tsne-selection, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals with selection applied. Points can be selected in either visual via click-and-drag and the selection will be reflected in both."}
 knitr::include_graphics("figures/mnist/case-study-linked-brushing-selection.png")
