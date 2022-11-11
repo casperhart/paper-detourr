@@ -1,5 +1,5 @@
 ---
-chapter: 3
+chapter: 6
 knit: "rmarkdown::render('detourr.rmd')"
 ---
 
@@ -54,14 +54,12 @@ detour(mnist_embeddings_8d, tour_aes(
 
 ```{r mnist-8d-sage, out.width="49%", fig.ncol=3, fig.show="hold", fig.align="center", fig.cap="Selected frames from the 8-dimensional MNIST embeddings data using show\\_sage() as the display method with a 2D grand tour path. The sage display shows the data points near the surface of the unit ball, which is due to the L2 normalisation of the original embeddings. This structure was not clear in the standard scatter display but is preserved with the sage display."}
 
-if (knitr::is_html_output()) {
-    knitr::include_graphics(
-        c(
-            "figures/mnist/mnist-8d-sage-1.png",
-            "figures/mnist/mnist-8d-sage-2.png"
-        )
+knitr::include_graphics(
+    c(
+        "figures/mnist/mnist-8d-sage-1.png",
+        "figures/mnist/mnist-8d-sage-2.png"
     )
-}
+)
 ```
 
 ```{r, eval=FALSE}

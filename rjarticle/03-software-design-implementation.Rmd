@@ -104,7 +104,7 @@ The output of `tour_path()` becomes the input of `show_*()`, forming a fluent pi
 - `paused`: whether the animation should be initialised in a paused state.
 - `scale_factor`: used to scale the points in or out so that they appear on a sensible range.
 
-There are also parameters specific to each display method, such as `slice_relative_volume` for `show_slice()`, and `gamma` and `R` for `show_sage()`. These details will be described further in Section \@ref(ch:display-methods).
+There are also parameters specific to each display method, such as `slice_relative_volume` for `show_slice()`, and `gamma` and `R` for `show_sage()`. These details will be described further in the Display Methods section.
 
 Putting all of this together, we have:
 

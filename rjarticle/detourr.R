@@ -279,7 +279,7 @@ grid.text("R", 0.25, unit(0.9, "npc") + unit(0.5, "lines"), just = "bottom")
 grid.text("JavaScript", 0.75, unit(0.9, "npc") + unit(0.5, "lines"), just = "bottom")
 
 
-## ----backend-comparison, echo=FALSE, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Performance comparison across different data sets and backends. TensorFlow provides better performance than a hand-coded implementation across the board. For smaller datasets like pdfsense, there is little difference between CPU and WASM backends for TensorFlow.js, but for larger dataset WASM performs much better."----
+## ----backend-comparison, echo=FALSE, out.width="75%", fig.align="center", fig.cap="Performance comparison across different data sets and backends. TensorFlow provides better performance than a hand-coded implementation across the board. For smaller datasets like pdfsense, there is little difference between CPU and WASM backends for TensorFlow.js, but for larger dataset WASM performs much better."----
 benchmarks <- read_tsv("data/backend_benchmarks.tsv")
 
 ggplot(benchmarks, aes(x = Backend, y = `Percent Time`, fill = `Data Set`)) +
@@ -292,12 +292,12 @@ ggplot(benchmarks, aes(x = Backend, y = `Percent Time`, fill = `Data Set`)) +
         panel.grid.minor.x = element_blank()
     ) +
     labs(
-        title = "LinAlg Backend Performance Comparison",
+        title = "TensorFlow Backend Performance Comparison",
         y = "% Scripting Time"
     )
 
 
-## ----backend-comparison-slice, echo=FALSE, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="The additional matrix operations required by the slice tour display function make the performance benefit of the WASM backend much more apparent."----
+## ----backend-comparison-slice, echo=FALSE, out.width="75%", fig.align="center", fig.cap="The additional matrix operations required by the slice tour display function make the performance benefit of the WASM backend much more apparent."----
 benchmarks <- read_tsv("data/backend_benchmarks_slice.tsv")
 
 ggplot(benchmarks, aes(x = Backend, y = `Percent Time`, fill = `Data Set`)) +
@@ -310,9 +310,82 @@ ggplot(benchmarks, aes(x = Backend, y = `Percent Time`, fill = `Data Set`)) +
         panel.grid.minor.x = element_blank()
     ) +
     labs(
-        title = "LinAlg Backend Performance Comparison (slice tour)",
+        title = "TensorFlow Backend Performance Comparison (slice tour)",
         y = "% Scripting Time"
     )
+
+
+
+## ---- child="05-display-methods.Rmd"------------------------------------------
+
+## ---- echo=FALSE, eval=FALSE--------------------------------------------------
+#> set.seed(1)
+#> library(detourr)
+#> library(tibble)
+#> 
+#> X <- geozoo::sphere.hollow(3, 2000)$points |>
+#>     as_tibble()
+#> 
+#> detour(X, tour_aes(projection = everything())) |>
+#>     tour_path(grand_tour(2)) |>
+#>     show_slice(anchor = c(1, 0, 0))
+
+
+## ----slice-sphere, out.width="32%", fig.ncol=3, fig.show="hold", fig.align="center", fig.cap="Selected frames of a 2D slice tour of a hollow sphere. The anchor for the slice is set to (1, 0, 0). Initially the slice is near the origin, but moves closer to the edge of the sphere as v1 rotates to be near orthogonal to the projection plane."----
+knitr::include_graphics(c(
+    "figures/display_methods/slice_sphere_1.png",
+    "figures/display_methods/slice_sphere_2.png",
+    "figures/display_methods/slice_sphere_3.png"
+))
+
+
+## ----med-dist, fig.cap="The median distance from the origin to the closest point increases with p, showing that uniform points in high dimensions tend to sit close to the boundary of the space they occupy.", out.width="75%", fig.align="center"----
+d <- function(p, n) {
+    (1 - 0.5^(1 / n))^(1 / p)
+}
+
+ggplot() +
+    geom_function(fun = function(p) d(p, 100)) +
+    scale_x_continuous(limits = c(2, 50)) +
+    scale_y_continuous(limits = c(0, 1)) +
+    labs(
+        x = "p", y = "d(p, N)",
+        title = "Median distance from origin to closest point (N=100)"
+    ) +
+    theme_bw()
+
+
+## ---- eval=FALSE, echo=FALSE--------------------------------------------------
+#> library(MASS)
+#> # generate a random uniform sample within a unit p-ball
+#> random_unif_pball <- function(n, p) {
+#>     # multivariate normal has random direction, but not uniform radius
+#>     df <- mvrnorm(n, rep(0, p), diag(rep(1, p)))
+#> 
+#>     # project points on to surface of unit ball
+#>     df <- t(apply(df, 1, function(x) x / sqrt(sum(x^2))))
+#> 
+#>     # scale in to form a uniform distribution in the p-ball
+#>     t(apply(df, 1, function(x) x * (runif(1)^(1 / p)))) |> as_tibble()
+#> }
+#> 
+#> X <- random_unif_pball(500, 50)
+#> p <- detour(X, tour_aes(projection = everything())) |>
+#>     tour_path(grand_tour(3))
+#> 
+#> p |> show_scatter(axes = FALSE)
+#> p |> show_sage(axes = FALSE)
+
+
+## ----sage-sphere, out.width="32%", fig.ncol=3, fig.show="hold", fig.align="center", fig.cap="(top) Initial frames of a 3D scatter tour of a 3, 10, and 50 dimensional ball respectively from left to right. (Bottom) Selected frames of a 3D sage tour of similar 3, 10, and 50 dimensional balls. As the dimensionality increases, the standard scatter display crowds the points near the center, whereas the sage display shows a consistent radial distribution of points. All screenshots are at the same zoom level."----
+knitr::include_graphics(c(
+    "figures/display_methods/scatter_sphere_3.png",
+    "figures/display_methods/scatter_sphere_10.png",
+    "figures/display_methods/scatter_sphere_50.png",
+    "figures/display_methods/sage_sphere_3.png",
+    "figures/display_methods/sage_sphere_10.png",
+    "figures/display_methods/sage_sphere_50.png"
+))
 
 
 
@@ -355,14 +428,12 @@ knitr::include_graphics(
 
 ## ----mnist-8d-sage, out.width="49%", fig.ncol=3, fig.show="hold", fig.align="center", fig.cap="Selected frames from the 8-dimensional MNIST embeddings data using show\\_sage() as the display method with a 2D grand tour path. The sage display shows the data points near the surface of the unit ball, which is due to the L2 normalisation of the original embeddings. This structure was not clear in the standard scatter display but is preserved with the sage display."----
 
-if (knitr::is_html_output()) {
-    knitr::include_graphics(
-        c(
-            "figures/mnist/mnist-8d-sage-1.png",
-            "figures/mnist/mnist-8d-sage-2.png"
-        )
+knitr::include_graphics(
+    c(
+        "figures/mnist/mnist-8d-sage-1.png",
+        "figures/mnist/mnist-8d-sage-2.png"
     )
-}
+)
 
 
 ## ---- eval=FALSE--------------------------------------------------------------
@@ -494,7 +565,7 @@ get_sim_data <- function(p, d, n = 5000) {
 }
 
 
-## ---- radial-cdf-p, fig.cap = "Relative projected volume for projections from p dimensions to d=3 dimensions. The solid line is simulated data, and the dashed line is the theoretical CDF"----
+## ---- radial-cdf-p, fig.cap = "Relative projected volume for projections from p dimensions to d=3 dimensions. The solid line is simulated data, and the dashed line is the theoretical CDF", out.width="75%", fig.align="center"----
 plot_data <- bind_rows(
   get_sim_data(p = 5, d = 3),
   get_sim_data(p = 10, d = 3),
@@ -512,7 +583,7 @@ ggplot(plot_data, aes(x = r, group = p, colour = p)) +
   )
 
 
-## ---- radial-cdf-d, fig.cap = "Relative projected volume for a projection of p=10 dimensions to d dimensions.  The solid line is simulated data, and the dashed line is the theoretical CDF. This shows the generalisation to d > 3 dimensions"----
+## ---- radial-cdf-d, fig.cap = "Relative projected volume for a projection of p=10 dimensions to d dimensions.  The solid line is simulated data, and the dashed line is the theoretical CDF. This shows the generalisation to d > 3 dimensions", out.width="75%", fig.align="center"----
 plot_data <- bind_rows(
   get_sim_data(p = 10, d = 2),
   get_sim_data(p = 10, d = 3),

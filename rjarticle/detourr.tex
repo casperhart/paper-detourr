@@ -18,12 +18,10 @@ Several methods exist for high dimensional data visualisation. Given a data matr
 
 Rather than generating a single static visual, the \emph{tour} (Asimov 1985); (Buja et al. 2005) works by combining a smooth sequence of projections in to an animation, which can then be viewed using a variety of different \emph{display methods} (Wickham et al. 2011). This allows the viewer to explore the data from a number of different perspectives while being able to visually connect what would otherwise be disjointed views. However, existing display implementations for tours in R are limited in their interactivity, performance, and portability, and generally result in jerky animations even for small datasets.
 
-In this paper we introduce a new R package called \CRANpkg{detourr}, which provides portable and performant display methods for tours. Chapter \ref{ch:litreview} gives an overview of tours and reviews a few existing software implementations. Chapter \ref{ch:implementation} describes how the software is used, and Chapter \ref{ch:webtechnologies} highlights some of the implementation decisions that were made regarding performance. A case study using embeddings created from the MNIST (LeCun 1998) dataset is presented in Chapter \ref{ch:casestudy}, and Chapter \ref{ch:futurework} discusses how this work might be extended in future.
+In this paper we introduce a new R package called \CRANpkg{detourr}, which provides portable and performant display methods for tours. In the first section we give a background of tours and review a few existing software implementations, and in the section following we describe how the software is used. We will then highlight some of the implementation decisions related to performace, and later provide a case study using embeddings created from the MNIST (LeCun 1998) dataset. In the final section we will discuss how this work might be extended in future.
 
-\pagebreak
-
-\hypertarget{ch:litreview}{%
-\section{Background and related works}\label{ch:litreview}}
+\hypertarget{background-and-related-works}{%
+\section{Background and related works}\label{background-and-related-works}}
 
 At its core, the tour is a sequence of projections of a data set that are combined together to form an animation. If we denote an \(n \times p\) data matrix \(\mathbf X\) and a \(p \times d\) projection matrix \(\mathbf A\), then we can denote our \(n \times d\) projected data set \(\mathbf Y\) as \(\mathbf Y = \mathbf X \mathbf A\).
 
@@ -45,7 +43,7 @@ In all of these, the tour path is calculated in two steps; the target basis is c
 
 The typical display methods for tours include histograms or density plots for 1D projections, and x-y scatter plots for 2D ones. 3D data can be viewed by a 3D scatterplot with a virtual perspective camera to enable displaying on a monitor. This can be enhanced with fog to make closer points more prominent, and interactive rotation controls to give a more immersive 3D experience. Projections with 3 or more dimensions can be displayed using parallel coordinates plots. Other displays exist such as Andrew's plot (Andrews 1972), where each point is represented by a fourier curve plotted between \(-\pi\) and \(\pi\).
 
-These display methods can be enhanced to display additional information, for example the \emph{slice tour} described in (Laa, Cook, and Valencia 2020) highlight points whose orthogonal distance to the projection plane is smaller than some threshold, and fade out points that are further away. This is good for finding hollowness in data, with an example shown in the case study in Chapter \ref{ch:casestudy}.
+These display methods can be enhanced to display additional information, for example the \emph{slice tour} described in (Laa, Cook, and Valencia 2020) highlight points whose orthogonal distance to the projection plane is smaller than some threshold, and fade out points that are further away. This is good for finding hollowness in data, with an example shown in the case study.
 
 Furthermore, the data may be transformed after being projected. One consequence of the curse of dimensionality is that when projecting from high to low dimensions, the points tend to crowd towards the centre. (Laa, Cook, and Lee 2021) describes the \emph{sage tour}, and provides a radial transformation that ensures the relative volume at a radius \(r\) in the data space is preserved in the projected space. The effect of this is that the crowding is reduced, and uniformly distributed data in the original space will continue to be uniform in the projected space.
 
@@ -60,10 +58,8 @@ The \CRANpkg{langevitour} R package instead uses the \CRANpkg{htmlwidgets} packa
 
 (Kipp, Laa, and Cook 2019) uses D3.js (Bostock, Ogievetsky, and Heer 2011) combined with the R \CRANpkg{shiny} (Chang et al. 2021) package to display dynamic tour visualisations. However, this setup had limited performance; the client-server nature of \CRANpkg{shiny} led to inconsistent frame rates, and the number of points that could be drawn was limited to \textless2000 because of the limitations of SVG when drawing many individual elements.
 
-\pagebreak
-
-\hypertarget{ch:implementation}{%
-\section{Usage and interactivity}\label{ch:implementation}}
+\hypertarget{usage-and-interactivity}{%
+\section{Usage and interactivity}\label{usage-and-interactivity}}
 
 The \{tourr\} package implements a functional approach to building tours can be intimidating to new users. Further, the use of the R graphics device and exporting of GIF images limit the interactivity that can be achieved. When designing the user API for \{detourr\} a data-oriented approach is taken to make it more approachable, and the visuals are built in JavaScript to enable rich user interactions. \{detourr\} also supports the full suite of tour path generating functions from the \{tourr\} package. The result is an experience that is powerful, immersive, and accessible to newcomers.
 
@@ -114,7 +110,7 @@ p
 \end{verbatim}
 
 \begin{verbatim}
-#> # A tibble: 466 x 2
+#> # A tibble: 461 x 2
 #>   is_new_basis projection_matrix
 #>   <lgl>        <list>           
 #> 1 TRUE         <dbl [6 x 3]>    
@@ -122,7 +118,7 @@ p
 #> 3 FALSE        <dbl [6 x 3]>    
 #> 4 FALSE        <dbl [6 x 3]>    
 #> 5 FALSE        <dbl [6 x 3]>    
-#> # ... with 461 more rows
+#> # ... with 456 more rows
 \end{verbatim}
 
 The \texttt{tour\_path()} function defines parameters for the tour such as:
@@ -193,7 +189,7 @@ The output of \texttt{tour\_path()} becomes the input of \texttt{show\_*()}, for
   \texttt{scale\_factor}: used to scale the points in or out so that they appear on a sensible range.
 \end{itemize}
 
-There are also parameters specific to each display method, such as \texttt{slice\_relative\_volume} for \texttt{show\_slice()}, and \texttt{gamma} and \texttt{R} for \texttt{show\_sage()}. These details will be described further in Section \ref{ch:display-methods}.
+There are also parameters specific to each display method, such as \texttt{slice\_relative\_volume} for \texttt{show\_slice()}, and \texttt{gamma} and \texttt{R} for \texttt{show\_sage()}. These details will be described further in the Display Methods section.
 
 Putting all of this together, we have:
 
@@ -263,10 +259,8 @@ The timeline at the bottom of the widget controls play and pause, and allows for
 
 \{detourr\} supports linked selection and filtering by integrating with \{crosstalk\}. When a \{crosstalk\} \texttt{SharedData} object is provided to \texttt{detour()} in place of a data frame, selections made using the \emph{box selection} tool will be reflected in all linked visuals. Likewise, any selection or filtering applied to a linked visual will be reflected by \{detourr\}. Compatible widgets include \{plotly\} (Sievert (2020)), \{leaflet\} (Cheng, Karambelkar, and Xie (2022)), and \{DT\} (Xie, Cheng, and Tan (2022)). An example of this is shown in Section \ref{sec:casestudylinked}.
 
-\pagebreak
-
-\hypertarget{ch:webtechnologies}{%
-\section{Web technologies for performance}\label{ch:webtechnologies}}
+\hypertarget{web-technologies-for-performance}{%
+\section{Web technologies for performance}\label{web-technologies-for-performance}}
 
 One of the goals of this work is to improve upon the animation performance of existing tour displays. \{detourr\} uses several different web technologies to maximise performance so that smooth animations can be played with large data sets consisting of upwards of 100k data points. This performance also enables the animations to work with less powerful devices, making \{detourr\} accessible to a wider range of users.
 
@@ -319,7 +313,12 @@ These backends were compared across 3 datasets of different sizes and complexity
 \end{itemize}
 
 \begin{figure}
-\includegraphics[width=\textwidth]{detourr_files/figure-latex/backend-comparison-1} \caption{Performance comparison across different data sets and backends. TensorFlow provides better performance than a hand-coded implementation across the board. For smaller datasets like pdfsense, there is little difference between CPU and WASM backends for TensorFlow.js, but for larger dataset WASM performs much better.}\label{fig:backend-comparison}
+
+{\centering \includegraphics[width=0.75\linewidth]{detourr_files/figure-latex/backend-comparison-1} 
+
+}
+
+\caption{Performance comparison across different data sets and backends. TensorFlow provides better performance than a hand-coded implementation across the board. For smaller datasets like pdfsense, there is little difference between CPU and WASM backends for TensorFlow.js, but for larger dataset WASM performs much better.}\label{fig:backend-comparison}
 \end{figure}
 
 Figure \ref{fig:backend-comparison} shows the performance of the three backends across the example datasets. TensorFlow provides better performance across the board when compared to the hand-coded implementation, but the difference between the CPU and WASM backends only becomes apparent with the larger MNIST embeddings datasets. Note that the metric \texttt{\%\ Scripting\ Time} is the time spent across \emph{all} JavaScript scripting for the visual, and not just the time spend on linear algebra operations. This is why we see such diminishing returns with the smaller \emph{pdfsense} dataset.
@@ -327,7 +326,12 @@ Figure \ref{fig:backend-comparison} shows the performance of the three backends 
 Another important comparison is the performance of the \texttt{show\_slice()} display function between these datasets. The slice tour uses additional matrix operations to calculate the distance from each point to the projection plane, so the benefit of WASM backend is even more apparent. This is shown in Figure \ref{fig:backend-comparison-slice}
 
 \begin{figure}
-\includegraphics[width=\textwidth]{detourr_files/figure-latex/backend-comparison-slice-1} \caption{The additional matrix operations required by the slice tour display function make the performance benefit of the WASM backend much more apparent.}\label{fig:backend-comparison-slice}
+
+{\centering \includegraphics[width=0.75\linewidth]{detourr_files/figure-latex/backend-comparison-slice-1} 
+
+}
+
+\caption{The additional matrix operations required by the slice tour display function make the performance benefit of the WASM backend much more apparent.}\label{fig:backend-comparison-slice}
 \end{figure}
 
 \hypertarget{rendering}{%
@@ -347,10 +351,204 @@ One downside of using HTML5 Canvas elements is that custom logic is needed to de
 
 Despite this extra step, a naive performance benchmark of the rendering performance of \{detourr\} using the \texttt{mnist\_embeddings\_8d} data set at 30 FPS shows only 3\% of the time is devoted to rendering and painting points, which for our use case is negligible.
 
-\pagebreak
+\hypertarget{display-methods-1}{%
+\section{Display methods}\label{display-methods-1}}
 
-\hypertarget{ch:casestudy}{%
-\section{Case study --- MNIST embeddings}\label{ch:casestudy}}
+There are three display functions implemented in the \{detourr\} package: \texttt{show\_scatter()}, \texttt{show\_sage()}, and \texttt{show\_slice()}. All three support 2D and 3D tour paths, and are based on the core \texttt{show\_scatter()} function. In this section, we will delve in to some of the implementation details of these functions and how the original and \emph{sage} display has been extended to three dimensions.
+
+\hypertarget{scatter-display}{%
+\subsection{Scatter display}\label{scatter-display}}
+
+The scatter display forms the core of the three display methods, and contains all of the features and interactivities described in previous sections. It is implemented in TypeScript using the Three.js library (Cabello (2010)) for rendering and TensorFlow.js (Abadi et al. (2016)) for linear algebra operations.
+
+\hypertarget{slice-display}{%
+\subsection{Slice display}\label{slice-display}}
+
+The slice display is implemented in the \texttt{show\_slice()} function, and is based on the \emph{slice tour} described in Laa, Cook, and Valencia (2020). At each animation frame, the distance from each point to the projection plane is computed. Those points closer than some threshold \(h\) to the projection plane are highlighted, and those further away are greyed out. Slices offset from the origin are also supported.
+
+Despite the slice tour itself being equivalent to that in \{tourr\}, the implementation has been modified for a simpler implementation. Laa, Cook, and Valencia (2020) calculates the distance as:
+
+\[
+\tilde \nu_i^2 = ||\mathbf{x}_i^\prime||^2
+\label{eq:nu}
+\]
+
+where
+
+\begin{equation}
+\mathbf{x}_i^\prime = \mathbf{x}_i - 
+  (\mathbf{x}_i \cdot \mathbf{a}_1)\mathbf{a}_1 - 
+  (\mathbf{x}_i \cdot \mathbf{a}_2)\mathbf{a}_2
+\label{eq:xprime}
+\end{equation}
+
+and similar for the 3-dimensional case but with an additional term. With some rearranging, we can instead express this with the equivalent:
+
+\begin{equation}
+\tilde \nu^2 = (\mathbf{X} - \mathbf{XAA}^T)^2 \mathbf{1}_p
+\label{eq:nu2}
+\end{equation}
+
+This requires fewer terms than the original, and is in a form that is more elegant to implement using TensorFlow.js. The implementation is also the same for both the 2D and 3D variants which keeps the code simple.
+
+\hypertarget{offsetting-the-slice}{%
+\subsubsection{Offsetting the slice}\label{offsetting-the-slice}}
+
+Laa, Cook, and Valencia (2020) provides a generalisation of equations \eqref{eq:nu} and \eqref{eq:xprime} for a projection plane passing through an arbitrary anchor point \(\mathbf{c}\) as follows:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Calculate \(\mathbf{x_i}^\prime\) as per equation \eqref{eq:xprime}
+\item
+  Calculate the component \(\mathbf{c}^\prime\) of \(\mathbf{c}\) orthogonal to the projection plane as:
+  \[
+  \mathbf{c}^\prime = \mathbf{c} - (\mathbf{c} \cdot \mathbf{a}_1)\mathbf{a}_1 - (\mathbf{c} \cdot \mathbf{a}_2)\mathbf{a}_2
+  \]
+\item
+  Calculate \(\nu_i^2 = || \mathbf{x}_i^\prime - \mathbf{c}^\prime ||^2 = \mathbf{x}_i^{\prime 2} + \mathbf{c}^{\prime 2} - 2\mathbf{x}_i^\prime \cdot \mathbf{c}^\prime\) where the cross-term is expressed as:
+  \[
+  \mathbf{x}_i^\prime \cdot \mathbf{c}^\prime = \mathbf{x_i} \cdot \mathbf{c} - 
+    (\mathbf{c} \cdot \mathbf{a}_1)(\mathbf{x}_i \cdot \mathbf{a}_1) -
+    (\mathbf{c} \cdot \mathbf{a}_2)(\mathbf{x}_i \cdot \mathbf{a}_2)
+  \]
+\end{enumerate}
+
+With this method there are many terms to calculate, and it was found it was difficult to implement and test. To circumvent this issue we instead take a different approach. Rather than offsetting the \textbf{projection plane} to pass through the point \(\mathbf{c}\) and then calculating the distances for each point, we instead offset the \textbf{data points} by \(\mathbf{c}\) in the opposite direction. This gives a distance calculation between points and projection plane that is equivalent to the original implementation but is much simpler to calculate. First we calculate the offset points \(\mathbf{X}^\prime\):
+
+\begin{equation}
+\mathbf{X}^\prime = \begin{bmatrix}
+    \mathbf{x}_1 - \mathbf{c} \\
+    \mathbf{x}_2 - \mathbf{c} \\
+    \vdots \\
+    \mathbf{x}_n - \mathbf{c}
+    \end{bmatrix}
+\label{eq:xprime2}
+\end{equation}
+
+And then calculate the distances to the projection plane similar to equation \eqref{eq:nu2}:
+
+\[
+\tilde \nu^2 = (\mathbf{X}^\prime - \mathbf{X}^\prime \mathbf{AA}^T)^2 \mathbf{1}_p
+\label{eq:nu3}
+\]
+
+Figure \ref{fig:slice-sphere} shows a slice tour implemented using equations \eqref{eq:xprime2} and \eqref{eq:nu3} with an anchor of \((1, 0, 0)\). Initially \(v_1\) is almost parallel to the projection plane, and so the slice runs close to the origin and only the points near the outside of the hollow sphere are highlighted. As the tour progresses, \(v_1\) becomes nearly orthogonal to the projection plane, and so the slice runs close to the edge of the sphere and only a small number of points near the centre of the visual are highlighted.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.32\linewidth]{figures/display_methods/slice_sphere_1} \includegraphics[width=0.32\linewidth]{figures/display_methods/slice_sphere_2} \includegraphics[width=0.32\linewidth]{figures/display_methods/slice_sphere_3} 
+
+}
+
+\caption{Selected frames of a 2D slice tour of a hollow sphere. The anchor for the slice is set to (1, 0, 0). Initially the slice is near the origin, but moves closer to the edge of the sphere as v1 rotates to be near orthogonal to the projection plane.}\label{fig:slice-sphere}
+\end{figure}
+
+\hypertarget{sage-display}{%
+\subsection{Sage display}\label{sage-display}}
+
+As the dimension of data increases, the volume of space that contains the data increases exponentially. One effect of this is that points tend to sit close to the edge of the space, with few points near the center. Hastie et al. (2001) gives a good illustration of this, where if we have \(N\) uniformly distributed points in a unit ball of dimension \(p\) centered at the origin, the median distance from the origin to the closest point is given by the equation
+
+\begin{equation}
+d(p, N) = \left( 1- \frac{1}{2}^\frac{1}{N}\right)^\frac{1}{p}
+\end{equation}
+
+This is shown in Figure \ref{fig:med-dist} where we see that if we have 100 points uniformly distributed in a \(p\)-ball in \(p=40\) dimensional space, the median distance from the origin to the closest will be at \(r > 0.8\).
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.75\linewidth]{detourr_files/figure-latex/med-dist-1} 
+
+}
+
+\caption{The median distance from the origin to the closest point increases with p, showing that uniform points in high dimensions tend to sit close to the boundary of the space they occupy.}\label{fig:med-dist}
+\end{figure}
+
+Counter-intuitively, when we project data from a high-dimensional space to low-dimensions, we see the opposite effect where points tend to crowd towards the center of the projected space. Laa, Cook, and Lee (2021) describes a method for correcting this distortion so that points are less crowded towards the center. It does this by ensuring the relative volume at a given radius \(r\) in the original space is preserved in the projected space. The relative volume for a 2-dimensional projection is given by the equation
+
+\begin{equation}
+v_2(r; p, R) 
+= \frac{V_{2D}(r; p, R)}{V(R,p)}
+= 1 - \left(1-\left(\frac{r}{R}\right)^2\right)^\frac{p}{2}
+\label{eq:radialcdf2d}
+\end{equation}
+
+where \(p\) is the dimension of our original data, \(R\) is the radius of the p-ball that contains our data, and \(r\) is the projected radius within \([0, R]\).
+
+The formula for the corrected radius \(r_y^\prime\) is then given as
+
+\begin{equation}
+r_y^\prime = R \sqrt{1 - \left(1-\left(\frac{r}{R}\right)^2\right)^\frac{p}{2}}
+\label{eq:radial2d}
+\end{equation}
+
+\{detourr\} uses a slight variation of equation \eqref{eq:radial2d} to calculate the corrected radius, which omits the multiplier of \(R\). This is because we always plot the data on the range \(r_y^\prime = [0, 1]\), so the multiplier is not needed:
+
+\begin{equation}
+r_y^\prime = \sqrt{1 - \left(1-\left(\frac{r}{R}\right)^2\right)^\frac{p}{2}}
+\label{eq:radial2d2}
+\end{equation}
+
+The full implementation is as follows:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Calculate the projected data \(\mathbf{Y} = \mathbf{XA}\), where \(\mathbf{X}\) has already been scaled.
+\item
+  Calculate the trimmed radius of the projected points \(r_y^\mathrm{trim} = min(r_y, R)\) and apply the radial transformation described in equation \eqref{eq:radial2d2} to get the corrected radius \(r_y^\prime\).
+\item
+  Scale the original euclidean coordinates by a factor of \(\frac{r_y^\prime}{r_y}\)
+\end{enumerate}
+
+This differs from the original implementation described in Laa, Cook, and Lee (2021) in that we don't convert the Euclidean coordinates to polar coordinates, and instead apply the scaling directly to the Euclidean coordinates. This removal of the conversion step was primarily to improve performance.
+
+\hypertarget{extension-to-3d}{%
+\subsubsection{Extension to 3D}\label{extension-to-3d}}
+
+Laa, Cook, and Lee (2021) provides the equation for the relative projected volume at radius \(r\) on to a two dimensional disk for the 2-dimensional sage display. In this thesis, we extend and implement the scatter, sage, and slice displays in 3D, and to do this we needed to calculate the relative projected volume for the case of a 3-dimensional projection.
+
+In appendix \ref{app:a} we show that the relative projected volume for a \textbf{sphere} at radius \(r\) is given by:
+
+\begin{equation}
+  v_3(r; p, R) = \mathrm{BetaInc}\left(\left(\frac{r}{R}\right)^2, \frac{3}{2}, \frac{p-1}{2}\right) 
+\end{equation}
+
+Where \(\mathrm{BetaInc}(x, \alpha, \beta)\) is the regularised incomplete beta function. This is important because it represents the radial CDF of points projected to 3 dimensions, and suggests that the radial PDF of the projected points is \(\mathrm{Beta}\left(\frac{3}{2}, \frac{p-1}{2}\right)\) assuming the original data is a uniformly distributed ball of radius \(R\).
+
+So for the three dimensional case, the full radial transformation for the sage tour is given by
+
+\begin{equation}
+r_y^\prime = \sqrt[3]{\mathrm{BetaInc}\left(\left(\frac{r}{R}\right)^2, \frac{3}{2}, \frac{p-1}{2}\right)}
+\label{eq:radial3}
+\end{equation}
+
+We also show that this generalises to any projection from \(p\) to \(d\) dimensions with \(p>d\) with the equation:
+
+\begin{equation}
+v(r; p, R, d) = \mathrm{BetaInc}\left(\left(\frac{r}{R}\right)^2, \frac{d}{2}, \frac{p-d}{2}+1\right)
+\label{eq:radiald}
+\end{equation}
+
+This also suggests that equation \eqref{eq:radialcdf2d} is a special case of equation \eqref{eq:radiald}.
+
+The 3D sage tour is currently implemented in the \texttt{show\_sage()} function, and like the scatter and slice displays the correct variant is chosen automatically based on the dimension of the provided tour path. However, this is not implemented for \(d>3\) as we don't yet have a display method that can handle higher-dimensional projections. This will be implemented as an extension of a Parallel Coordinates Plot (PCP) or Andrew's plot in future.
+
+An example of the 3D sage tour is shown in Figure \ref{fig:sage-sphere}.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.32\linewidth]{figures/display_methods/scatter_sphere_3} \includegraphics[width=0.32\linewidth]{figures/display_methods/scatter_sphere_10} \includegraphics[width=0.32\linewidth]{figures/display_methods/scatter_sphere_50} \includegraphics[width=0.32\linewidth]{figures/display_methods/sage_sphere_3} \includegraphics[width=0.32\linewidth]{figures/display_methods/sage_sphere_10} \includegraphics[width=0.32\linewidth]{figures/display_methods/sage_sphere_50} 
+
+}
+
+\caption{(top) Initial frames of a 3D scatter tour of a 3, 10, and 50 dimensional ball respectively from left to right. (Bottom) Selected frames of a 3D sage tour of similar 3, 10, and 50 dimensional balls. As the dimensionality increases, the standard scatter display crowds the points near the center, whereas the sage display shows a consistent radial distribution of points. All screenshots are at the same zoom level.}\label{fig:sage-sphere}
+\end{figure}
+
+\hypertarget{case-study-mnist-embeddings}{%
+\section{Case study --- MNIST embeddings}\label{case-study-mnist-embeddings}}
 
 A common task when analysing wide or sparse data sets is to generate embeddings; finding a lower dimensional representation of high dimensional data, placing similar objects close together and dissimilar objects far apart in the embedding space. This is especially useful when dealing with text or image data.
 
@@ -376,6 +574,15 @@ In the lower left of Figure \ref{fig:mnist-8d-scatter} is an example of the \tex
 
 \hypertarget{sage-and-slice-display-methods}{%
 \subsection{Sage and Slice display methods}\label{sage-and-slice-display-methods}}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.49\linewidth]{figures/mnist/mnist-8d-sage-1} \includegraphics[width=0.49\linewidth]{figures/mnist/mnist-8d-sage-2} 
+
+}
+
+\caption{Selected frames from the 8-dimensional MNIST embeddings data using show\_sage() as the display method with a 2D grand tour path. The sage display shows the data points near the surface of the unit ball, which is due to the L2 normalisation of the original embeddings. This structure was not clear in the standard scatter display but is preserved with the sage display.}\label{fig:mnist-8d-sage}
+\end{figure}
 
 The \texttt{show\_scatter()} display method gives the viewer a fairly good sense of the data set, but there is some structure that may not be obvious. The embeddings in the \texttt{mnist\_embeddings\_8d} and \texttt{mnist\_embeddings\_32d} datasets are L2 normalised, so the points sit on the surface of a unit ball in the high-dimensional space. To reveal this structure, we can use the \emph{sage} (Laa, Cook, and Lee (2021)) or \emph{slice} (Laa, Cook, and Valencia (2020)) display methods, which are implemented as \texttt{show\_sage()} and \texttt{show\_slice()} respectively.
 
@@ -413,10 +620,8 @@ Figure \ref{fig:linked-tsne-filter} shows the result of filtering the visuals us
 \includegraphics[width=\textwidth]{figures/mnist/case-study-linked-brushing-filter} \caption{Linked visuals with filtering applied. Viewing each digit individually makes outlying points much more apparent, and those points can be identified using tooltips.}\label{fig:linked-tsne-filter}
 \end{figure}
 
-\pagebreak
-
-\hypertarget{ch:futurework}{%
-\section{Conclusion and future work}\label{ch:futurework}}
+\hypertarget{conclusion-and-future-work}{%
+\section{Conclusion and future work}\label{conclusion-and-future-work}}
 
 In this paper we have introduced \{detour\} which provides interactive, performant, and portable tour visualisations from R. We accomplish these things using web technologies; TensorFlow.js (Abadi et al. (2016)) provides fast linear algebra operations through WebAssembly, Three.js provides GPU rendering via WebGL, and JavaScript \& HTML enable good performance and interactive features across the board. We also provide a simplified implementation of the Slice display (Laa, Cook, and Valencia (2020)), and have generalised the radial transformation from the Sage display (Laa, Cook, and Lee (2021)) to work with tours of 3 or more dimensions. All of this is done with an intuitive user interface which makes the software accessible to new users.
 
@@ -431,6 +636,8 @@ As well as being able to display points and lines, support for plotting surfaces
 Support for displaying images or sprites directly on the tour visual or as an extension of the tooltip functionality is possible. A similar feature is implemented in the Tensorboard Embedding Visualiser (Smilkov et al. (2016)) which also uses Three.js under the hood.
 
 What's more, Three.js has support for VR, which would be an interesting addition for exploring an immersive 3D tour visual.
+
+\pagebreak
 
 \hypertarget{appendix}{%
 \section{Appendix}\label{appendix}}
@@ -517,15 +724,21 @@ F(r; p, R, d) = \mathrm{BetaInc}\left(\left(\frac{r}{R}\right)^2, \frac{d}{2}, \
 Figures \ref{fig:radial-cdf-p} and \ref{fig:radial-cdf-d} compare the theoretical results from equations \eqref{eq:betainc1} and \eqref{eq:betainc2} respectively with simulated values.
 
 \begin{figure}
-\centering
-\includegraphics{detourr_files/figure-latex/radial-cdf-p-1.pdf}
-\caption{\label{fig:radial-cdf-p}Relative projected volume for projections from p dimensions to d=3 dimensions. The solid line is simulated data, and the dashed line is the theoretical CDF}
+
+{\centering \includegraphics[width=0.75\linewidth]{detourr_files/figure-latex/radial-cdf-p-1} 
+
+}
+
+\caption{Relative projected volume for projections from p dimensions to d=3 dimensions. The solid line is simulated data, and the dashed line is the theoretical CDF}\label{fig:radial-cdf-p}
 \end{figure}
 
 \begin{figure}
-\centering
-\includegraphics{detourr_files/figure-latex/radial-cdf-d-1.pdf}
-\caption{\label{fig:radial-cdf-d}Relative projected volume for a projection of p=10 dimensions to d dimensions. The solid line is simulated data, and the dashed line is the theoretical CDF. This shows the generalisation to d \textgreater{} 3 dimensions}
+
+{\centering \includegraphics[width=0.75\linewidth]{detourr_files/figure-latex/radial-cdf-d-1} 
+
+}
+
+\caption{Relative projected volume for a projection of p=10 dimensions to d dimensions.  The solid line is simulated data, and the dashed line is the theoretical CDF. This shows the generalisation to d > 3 dimensions}\label{fig:radial-cdf-d}
 \end{figure}
 
 \hypertarget{references}{%
@@ -572,6 +785,9 @@ Cook, Dianne, Deborah F Swayne, and Andreas Buja. 2007. \emph{Interactive and Dy
 
 \leavevmode\vadjust pre{\hypertarget{ref-harrison2022langevitour}{}}%
 Harrison, Paul. 2022. \emph{Langevitour: Langevin Tour}. \url{\%7Bhttps://CRAN.R-project.org/package=langevitour\%7D}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-hastie2009elements}{}}%
+Hastie, Trevor, Robert Tibshirani, Jerome H Friedman, and Jerome H Friedman. 2001. \emph{The Elements of Statistical Learning: Data Mining, Inference, and Prediction}. Springer.
 
 \leavevmode\vadjust pre{\hypertarget{ref-tidyselect}{}}%
 Henry, Lionel, and Hadley Wickham. 2022. \emph{Tidyselect: Select from a Set of Strings}. \url{\%7Bhttps://CRAN.R-project.org/package=tidyselect\%7D}.

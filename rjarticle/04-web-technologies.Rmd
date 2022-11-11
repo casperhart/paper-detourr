@@ -157,7 +157,7 @@ These backends were compared across 3 datasets of different sizes and complexity
 - _mnist\_embeddings\_8d_: 8-dimensional embeddings of the MNIST dataset, with a total of 10k observations.
 - _mnist\_embeddings\_32d_: 32-dimensional embeddings of the MNIST dataset, again with 10k observations.
 
-```{r backend-comparison, echo=FALSE, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Performance comparison across different data sets and backends. TensorFlow provides better performance than a hand-coded implementation across the board. For smaller datasets like pdfsense, there is little difference between CPU and WASM backends for TensorFlow.js, but for larger dataset WASM performs much better."}
+```{r backend-comparison, echo=FALSE, out.width="75%", fig.align="center", fig.cap="Performance comparison across different data sets and backends. TensorFlow provides better performance than a hand-coded implementation across the board. For smaller datasets like pdfsense, there is little difference between CPU and WASM backends for TensorFlow.js, but for larger dataset WASM performs much better."}
 benchmarks <- read_tsv("data/backend_benchmarks.tsv")
 
 ggplot(benchmarks, aes(x = Backend, y = `Percent Time`, fill = `Data Set`)) +
@@ -170,7 +170,7 @@ ggplot(benchmarks, aes(x = Backend, y = `Percent Time`, fill = `Data Set`)) +
         panel.grid.minor.x = element_blank()
     ) +
     labs(
-        title = "LinAlg Backend Performance Comparison",
+        title = "TensorFlow Backend Performance Comparison",
         y = "% Scripting Time"
     )
 ```
@@ -179,7 +179,7 @@ Figure \@ref(fig:backend-comparison) shows the performance of the three backends
 
 Another important comparison is the performance of the `show_slice()` display function between these datasets. The slice tour uses additional matrix operations to calculate the distance from each point to the projection plane, so the benefit of WASM backend is even more apparent. This is shown in Figure \@ref(fig:backend-comparison-slice)
 
-```{r backend-comparison-slice, echo=FALSE, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="The additional matrix operations required by the slice tour display function make the performance benefit of the WASM backend much more apparent."}
+```{r backend-comparison-slice, echo=FALSE, out.width="75%", fig.align="center", fig.cap="The additional matrix operations required by the slice tour display function make the performance benefit of the WASM backend much more apparent."}
 benchmarks <- read_tsv("data/backend_benchmarks_slice.tsv")
 
 ggplot(benchmarks, aes(x = Backend, y = `Percent Time`, fill = `Data Set`)) +
@@ -192,7 +192,7 @@ ggplot(benchmarks, aes(x = Backend, y = `Percent Time`, fill = `Data Set`)) +
         panel.grid.minor.x = element_blank()
     ) +
     labs(
-        title = "LinAlg Backend Performance Comparison (slice tour)",
+        title = "TensorFlow Backend Performance Comparison (slice tour)",
         y = "% Scripting Time"
     )
 ```

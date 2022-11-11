@@ -20,7 +20,6 @@ output:
   rjtools::rjournal_web_article:
     self_contained: yes
     toc: no
-    number_sections: true
 bibliography: detourr.bib
 header-includes:
   - \usepackage{tabu}
@@ -57,40 +56,37 @@ options(
 ```{r, child="01-introduction.Rmd"}
 ```
 
-\pagebreak
-
-# Background and related works {#ch:litreview}
+# Background and related works
 
 ```{r, child="02-background.Rmd"}
 ```
 
-\pagebreak
-
-# Usage and interactivity {#ch:implementation}
+# Usage and interactivity
 
 ```{r, child="03-software-design-implementation.Rmd"}
 ```
 
-\pagebreak
-
-# Web technologies for performance {#ch:webtechnologies}
+# Web technologies for performance
 
 ```{r, child="04-web-technologies.Rmd"}
 ```
 
-\pagebreak
+# Display methods
 
-# Case study --- MNIST embeddings {#ch:casestudy}
+```{r, child="05-display-methods.Rmd"}
+```
+
+# Case study --- MNIST embeddings
 
 ```{r, child="06-case-study.Rmd"}
 ```
 
-\pagebreak
-
-# Conclusion and future work {#ch:futurework}
+# Conclusion and future work
 
 ```{r, child="07-future-work.Rmd"}
 ```
+
+\pagebreak
 
 ```{r, child="A-appA.Rmd"}
 ```

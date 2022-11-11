@@ -116,7 +116,7 @@ get_sim_data <- function(p, d, n = 5000) {
 }
 ```
 
-```{r, radial-cdf-p, fig.cap = "Relative projected volume for projections from p dimensions to d=3 dimensions. The solid line is simulated data, and the dashed line is the theoretical CDF"}
+```{r, radial-cdf-p, fig.cap = "Relative projected volume for projections from p dimensions to d=3 dimensions. The solid line is simulated data, and the dashed line is the theoretical CDF", out.width="75%", fig.align="center"}
 plot_data <- bind_rows(
   get_sim_data(p = 5, d = 3),
   get_sim_data(p = 10, d = 3),
@@ -134,7 +134,7 @@ ggplot(plot_data, aes(x = r, group = p, colour = p)) +
   )
 ```
 
-```{r, radial-cdf-d, fig.cap = "Relative projected volume for a projection of p=10 dimensions to d dimensions.  The solid line is simulated data, and the dashed line is the theoretical CDF. This shows the generalisation to d > 3 dimensions"}
+```{r, radial-cdf-d, fig.cap = "Relative projected volume for a projection of p=10 dimensions to d dimensions.  The solid line is simulated data, and the dashed line is the theoretical CDF. This shows the generalisation to d > 3 dimensions", out.width="75%", fig.align="center"}
 plot_data <- bind_rows(
   get_sim_data(p = 10, d = 2),
   get_sim_data(p = 10, d = 3),
