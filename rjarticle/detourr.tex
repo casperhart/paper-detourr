@@ -9,8 +9,8 @@ The tour provides a useful vehicle for exploring high dimensional datasets. It w
 We take a detour into web technologies, such as Three.js and WebGL, to support smooth and performant tour visualisations. The R package \{detourr\} implements a set of display tools using \{htmlwidgets\} and TypeScript that allow for rich interactions (including orbit controls, scrubbing, and brushing) and smooth animations for large datasets. It provides a declarative R interface which is accessible to new users, and it supports linked views using \{crosstalk\} and \{shiny\}. The resulting animations are portable across a wide range of browsers and devices. We also extend the radial transformation of the Sage Tour (Laa, Cook, and Lee (2021)) to 3 or more dimensions with an implementation in 3D, and provide a simplified implementation of the Slice Tour (Laa, Cook, and Valencia (2020)).
 }
 
-\hypertarget{ch:intro}{%
-\section{Introduction}\label{ch:intro}}
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
 
 An important first step in any data analysis task is to plot the data so that we can get an intuitive understanding of its structure, for example identifying the presence of clusters or outliers. When the data consists of one or two variables this is quite straightforward, but as the dimensionality of the data increases it becomes more difficult to visualise.
 
@@ -47,7 +47,7 @@ The typical display methods for tours include histograms or density plots for 1D
 
 These display methods can be enhanced to display additional information, for example the \emph{slice tour} described in (Laa, Cook, and Valencia 2020) highlight points whose orthogonal distance to the projection plane is smaller than some threshold, and fade out points that are further away. This is good for finding hollowness in data, with an example shown in the case study in Chapter \ref{ch:casestudy}.
 
-Furthermore, the data may be transformed after being projected. One consequence of the curse of dimensionality is that when projecting from high to low dimensions, the points tend to crowd towards the center. (Laa, Cook, and Lee 2021) describes the \emph{sage tour}, and provides a radial transformation that ensures the relative volume at a radius \(r\) in the data space is preserved in the projected space. The effect of this is that the crowding is reduced, and uniformly distributed data in the original space will continue to be uniform in the projected space.
+Furthermore, the data may be transformed after being projected. One consequence of the curse of dimensionality is that when projecting from high to low dimensions, the points tend to crowd towards the centre. (Laa, Cook, and Lee 2021) describes the \emph{sage tour}, and provides a radial transformation that ensures the relative volume at a radius \(r\) in the data space is preserved in the projected space. The effect of this is that the crowding is reduced, and uniformly distributed data in the original space will continue to be uniform in the projected space.
 
 \hypertarget{software-implementations}{%
 \subsection{Software implementations}\label{software-implementations}}
@@ -114,7 +114,7 @@ p
 \end{verbatim}
 
 \begin{verbatim}
-#> # A tibble: 471 x 2
+#> # A tibble: 466 x 2
 #>   is_new_basis projection_matrix
 #>   <lgl>        <list>           
 #> 1 TRUE         <dbl [6 x 3]>    
@@ -122,7 +122,7 @@ p
 #> 3 FALSE        <dbl [6 x 3]>    
 #> 4 FALSE        <dbl [6 x 3]>    
 #> 5 FALSE        <dbl [6 x 3]>    
-#> # ... with 466 more rows
+#> # ... with 461 more rows
 \end{verbatim}
 
 The \texttt{tour\_path()} function defines parameters for the tour such as:
@@ -134,7 +134,7 @@ The \texttt{tour\_path()} function defines parameters for the tour such as:
 \item
   \texttt{start}: the starting basis or projection matrix
 \item
-  \texttt{fps} frames per second with which to display the animation. Defaults to 30 but can be increased for a smoother animation or decreased for very large data.
+  \texttt{fps}: frames per second with which to display the animation. Defaults to 30 but can be increased for a smoother animation or decreased for very large data.
 \item
   \texttt{max\_bases}: the number of basis frames to generate. A higher number will give a longer tour animation.
 \end{itemize}
@@ -182,7 +182,7 @@ The output of \texttt{tour\_path()} becomes the input of \texttt{show\_*()}, for
 \item
   \texttt{palette}: the colour palette to use for the tour.
 \item
-  \texttt{center}: whether the data should be centered before displaying.
+  \texttt{center}: whether the data should be centred before displaying.
 \item
   \texttt{axes}: whether to show axis / what the axis titles should be
 \item
@@ -418,7 +418,7 @@ Figure \ref{fig:linked-tsne-filter} shows the result of filtering the visuals us
 \hypertarget{ch:futurework}{%
 \section{Conclusion and future work}\label{ch:futurework}}
 
-In this paper we have introduced \{detour\} which provides interactive, performant, and portable tour visualisations from R. We accomplish these things using web technolies; TensorFlow.js (Abadi et al. (2016)) provides fast linear algebra operations through WebAssembly, Three.js provides GPU rendering via WebGL, and JavaScript \& HTML enable good performance and interactive features across the board. We also provide a simplified implementation of the Slice display (Laa, Cook, and Valencia (2020)), and have generalised the radial transformation from the Sage display (Laa, Cook, and Lee (2021)) to work with tours of 3 or more dimensions. All of this is done with an intuitive user interface which makes the software accessible to new users.
+In this paper we have introduced \{detour\} which provides interactive, performant, and portable tour visualisations from R. We accomplish these things using web technologies; TensorFlow.js (Abadi et al. (2016)) provides fast linear algebra operations through WebAssembly, Three.js provides GPU rendering via WebGL, and JavaScript \& HTML enable good performance and interactive features across the board. We also provide a simplified implementation of the Slice display (Laa, Cook, and Valencia (2020)), and have generalised the radial transformation from the Sage display (Laa, Cook, and Lee (2021)) to work with tours of 3 or more dimensions. All of this is done with an intuitive user interface which makes the software accessible to new users.
 
 Looking ahead, the priority for the next stage of development is to leverage \{detourr\}'s extensible design to implement additional display methods such as density plots, histograms, parallel coordinates plots, and Andrew's plot. Additional changes could also be made to allow the radial transformation of the sage display and the highlighting of points from the slice display to be incorporated in to these other display methods, rather than being limited to only the scatter plot display. This would also allow the additional information from both the sage and slice tour applied to the same visual.
 
@@ -438,7 +438,7 @@ What's more, Three.js has support for VR, which would be an interesting addition
 \hypertarget{app:a}{%
 \subsection{Radial CDF of hyperspheres projected to 3 dimensions}\label{app:a}}
 
-In order to implement the 3D variant of the sage tour (Laa, Cook, and Lee (2021)), we need an expression for the relative projected volume of a \textbf{sphere} of radius \(R\). This is then used as a scaling factor for point radii in the visualisation to prevent points from being crowded towards the center.
+In order to implement the 3D variant of the sage tour (Laa, Cook, and Lee (2021)), we need an expression for the relative projected volume of a \textbf{sphere} of radius \(R\). This is then used as a scaling factor for point radii in the visualisation to prevent points from being crowded towards the centre.
 
 First we denote the volume of a \(p\)-dimensional hypersphere by:
 
@@ -507,7 +507,7 @@ We can generalise this to any projection from \(p\) to \(d\) dimensions using th
 
 where \(\frac{2\pi^{d/2}}{\Gamma(d/2)} x^{d-1}\) is the surface area of a d-ball.
 
-This results in the relative projected volume of a projection from \(p\) to \(d\) dimesions being given by:
+This results in the relative projected volume of a projection from \(p\) to \(d\) dimensions being given by:
 
 \begin{equation}
 F(r; p, R, d) = \mathrm{BetaInc}\left(\left(\frac{r}{R}\right)^2, \frac{d}{2}, \frac{p-d}{2}+1\right)

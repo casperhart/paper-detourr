@@ -65,7 +65,7 @@ The `tour_path()` function defines parameters for the tour such as:
 
 - `tour_path`: the tour path generator, e.g. `grand_tour()`, `guided_tour()`, or any other path generator compatible with the {tourr} package
 - `start`: the starting basis or projection matrix
-- `fps` frames per second with which to display the animation. Defaults to 30 but can be increased for a smoother animation or decreased for very large data.
+- `fps`: frames per second with which to display the animation. Defaults to 30 but can be increased for a smoother animation or decreased for very large data.
 - `max_bases`:  the number of basis frames to generate. A higher number will give a longer tour animation.
 
 The resulting `detour` object is stored in a standard data frame for easy consumption and inspection. It contains the full details of the tour path, where the $i^{th}$ row corresponds to the $i^{th}$ animation frame of the tour, with the following columns:
@@ -98,7 +98,7 @@ p |> show_scatter(axes = FALSE, size = 0.5)
 The output of `tour_path()` becomes the input of `show_*()`, forming a fluent pipeline. For the three display methods described above, the common parameters are:
 
 - `palette`: the colour palette to use for the tour.
-- `center`: whether the data should be centered before displaying.
+- `center`: whether the data should be centred before displaying.
 - `axes`: whether to show axis / what the axis titles should be
 - `edges`: a two-column numeric matrix defining indices of points where line segments should be drawn between
 - `paused`: whether the animation should be initialised in a paused state.

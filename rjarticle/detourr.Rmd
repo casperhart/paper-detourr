@@ -51,7 +51,8 @@ options(
 )
 ```
 
-# Introduction {#ch:intro}
+
+# Introduction
 
 ```{r, child="01-introduction.Rmd"}
 ```
