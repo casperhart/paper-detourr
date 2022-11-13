@@ -6,36 +6,33 @@ fontsize: 12pt
 \thispagestyle{empty}
 \today
 
-Editor   
+Editor  
 The R Journal  
 \bigskip
 
-Dear Professor Cook,
+Dear Dr Catherine Hurley,
 \bigskip
 
-Please consider our article titled "ToOoOlTiPs: An R Package for Customizable Tooltips in Interactive Graphics" for publication in the R Journal.
+Please consider our article titled "Taking the Scenic Route: Interactive and Performant Tour Animations" for publication in the R Journal.
 
-The manuscript introduces the new package called `ToOoOlTiPs` which provides examples on how to use interactive graphics in journal articles, and general tips for making an interesting contribution.
+The manuscript introduces the new CRAN package called `detourr`, which provides interactive and performant tour animations for exploring high-dimensional data. This package builds on top of `tourr` and implements a set of display tools using `htmlwidgets` and TypeScript that allows for rich interactions such as orbit controls, scrubbing, brushing, and tooltips. Web technologies such as `Three.js` and `TensorFlow.js` are used to enable good animation performance for large datasets. `detourr` has modern user API inspired by `ggplot2` and the tidy data workflow. This article is written in markdown and contains reproducible code examples, with an interactive widget included in the HTML version.
 
-We believe the readers of the R Journal will find this article helpful for their work because it provides generally useful instructions that will work for many purposes. 
+We believe this article is a good fit for the R journal, because it features a novel implementation of tour animations with and a modern, intuitive user experience in R.
 
 \bigskip
 \bigskip
 
 Regards,
-    
-    
-    
-    
-Quietest Quokka  
-Department of Letter Q  
-University of Little Mates  
-Somewhere, Australia  
-qquo@ulm.edu
+
+Casper Hart  
+Department of Statistics  
+The University of Auckland  
+New Zealand  
+casperhart93@gmail.com
+
+Earo Wang  
+Department of Statistics  
+The University of Auckland  
+earo.wang@gmail.com
 
 \bigskip
-
-NOTES: Modify this file with information about your article. 
-
-1. It may be invisible to you, so be aware that after each address line there are two spaces, this makes the line break correctly.
-2. It is also reasonable to submit an .md format of your motivating letter instead of a pdf. 
