@@ -19,7 +19,7 @@ In all of these, the tour path is calculated in two steps; the target basis is c
 
 ## Display methods
 
-The typical display methods for tours include histograms or density plots for 1D projections, and x-y scatter plots for 2D ones. 3D data can be viewed by a 3D scatterplot with a virtual perspective camera to enable displaying on a monitor. This can be enhanced with fog to make closer points more prominent, and interactive rotation controls to give a more immersive 3D experience. Projections with 3 or more dimensions can be displayed using parallel coordinates plots. Other displays exist such as Andrew's plot [@andrews1972plots], where each point is represented by a fourier curve plotted between $-\pi$ and $\pi$.
+The typical display methods for tours include histograms or density plots for 1D projections, and x-y scatter plots for 2D ones. 3D data can be viewed by a 3D scatterplot with a virtual perspective camera to enable displaying on a monitor. This can be enhanced with fog to make closer points more prominent, and interactive rotation controls to give a more immersive 3D experience. Projections with 3 or more dimensions can be displayed using parallel coordinates plots. Other displays exist such as Andrew's plot [@andrews1972plots], where each point is represented by a Fourier curve plotted between $-\pi$ and $\pi$.
 
 These display methods can be enhanced to display additional information, for example the _slice tour_ described in [@laa2020slice] highlight points whose orthogonal distance to the projection plane is smaller than some threshold, and fade out points that are further away. This is good for finding hollowness in data, with an example shown in the case study.
 

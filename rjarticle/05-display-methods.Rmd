@@ -3,7 +3,7 @@ chapter: 5
 knit: "bookdown::render_book"
 ---
 
-There are three display functions implemented in the {detourr} package: `show_scatter()`, `show_sage()`, and `show_slice()`. All three support 2D and 3D tour paths, and are based on the core `show_scatter()` function. In this section, we will delve in to some of the implementation details of these functions and how the original and _sage_ display has been extended to three dimensions.
+There are three display functions implemented in the \pkg{detourr} package: `show_scatter()`, `show_sage()`, and `show_slice()`. All three support 2D and 3D tour paths, and are based on the core `show_scatter()` function. In this section, we will delve in to some of the implementation details of these functions and how the original and _sage_ display has been extended to three dimensions.
 
 ## Scatter display
 
@@ -13,7 +13,7 @@ The scatter display forms the core of the three display methods, and contains al
 
 The slice display is implemented in the `show_slice()` function, and is based on the _slice tour_ described in @laa2020slice. At each animation frame, the distance from each point to the projection plane is computed. Those points closer than some threshold $h$ to the projection plane are highlighted, and those further away are greyed out. Slices offset from the origin are also supported.
 
-Despite the slice tour itself being equivalent to that in {tourr}, the implementation has been modified for a simpler implementation. @laa2020slice calculates the distance as:
+Despite the slice tour itself being equivalent to that in \pkg{tourr}, the implementation has been modified for a simpler implementation. @laa2020slice calculates the distance as:
 
 $$
 \tilde \nu_i^2 = ||\mathbf{x}_i^\prime||^2
@@ -99,7 +99,7 @@ knitr::include_graphics(c(
 
 ## Sage display
 
-As the dimension of data increases, the volume of space that contains the data increases exponentially. One effect of this is that points tend to sit close to the edge of the space, with few points near the center. @hastie2009elements gives a good illustration of this, where if we have $N$ uniformly distributed points in a unit ball of dimension $p$ centered at the origin, the median distance from the origin to the closest point is given by the equation
+As the dimension of data increases, the volume of space that contains the data increases exponentially. One effect of this is that points tend to sit close to the edge of the space, with few points near the center. @hastie2009elements gives a good illustration of this, where if we have $N$ uniformly distributed points in a unit ball of dimension $p$ centred at the origin, the median distance from the origin to the closest point is given by the equation
 
 \begin{equation}
 d(p, N) = \left( 1- \frac{1}{2}^\frac{1}{N}\right)^\frac{1}{p}
@@ -160,7 +160,7 @@ This differs from the original implementation described in @laa2021burning in th
 
 @laa2021burning provides the equation for the relative projected volume at radius $r$ on to a two dimensional disk for the 2-dimensional sage display. In this thesis, we extend and implement the scatter, sage, and slice displays in 3D, and to do this we needed to calculate the relative projected volume for the case of a 3-dimensional projection.
 
-In appendix \@ref(app:a) we show that the relative projected volume for a __sphere__ at radius $r$ is given by:
+In the appendix we show that the relative projected volume for a __sphere__ at radius $r$ is given by:
 
 \begin{equation}
   v_3(r; p, R) = \mathrm{BetaInc}\left(\left(\frac{r}{R}\right)^2, \frac{3}{2}, \frac{p-1}{2}\right) 

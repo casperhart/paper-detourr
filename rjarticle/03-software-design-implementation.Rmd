@@ -3,7 +3,7 @@ chapter: 3
 knit: "rmarkdown::render('detourr.rmd')"
 ---
 
-The {tourr} package implements a functional approach to building tours can be intimidating to new users. Further, the use of the R graphics device and exporting of GIF images limit the interactivity that can be achieved. When designing the user API for {detourr} a data-oriented approach is taken to make it more approachable, and the visuals are built in JavaScript to enable rich user interactions. {detourr} also supports the full suite of tour path generating functions from the {tourr} package. The result is an experience that is powerful, immersive, and accessible to newcomers.
+The \pkg{tourr} package implements a functional approach to building tours can be intimidating to new users. Further, the use of the R graphics device and exporting of GIF images limit the interactivity that can be achieved. When designing the user API for \pkg{detourr} a data-oriented approach is taken to make it more approachable, and the visuals are built in JavaScript to enable rich user interactions. \pkg{detourr} also supports the full suite of tour path generating functions from the \pkg{tourr} package. The result is an experience that is powerful, immersive, and accessible to newcomers.
 
 This chapter is structured as follows. The first section describes the user API in R and supported features, the second describes how the user can interact with the resulting visual. Throughout the chapter, we use the `pdfSense` dataset (@wang2018mapping; @lee2021liminal) to provide a running example. This data set consists of 2808 observations and 56 input variables from  CT14HERA parton distribution function fits. The first 6 principal components are used to create the tour, accounting for ~55% of the variance in the data. 
 
@@ -28,7 +28,7 @@ pdf_df <- pdfsense |>
 
 ## User interface
 
-{detourr} has a data-oriented user interface heavily influenced by the Tidy Data (@tidydata) workflow, Grammar of Graphics (@wilkinson2012grammar; @wickham2010layered), and {ggplot2} (@wickham2016ggplot2). The visualisation is built in a sequence of steps which follow the logical flow of data in the tour building process, which makes the API intuitive and accessible.
+\pkg{detourr} has a data-oriented user interface heavily influenced by the Tidy Data (@tidydata) workflow, Grammar of Graphics (@wilkinson2012grammar; @wickham2010layered), and \CRANpkg{ggplot2} (@wickham2016ggplot2). The visualisation is built in a sequence of steps which follow the logical flow of data in the tour building process, which makes the API intuitive and accessible.
 
 ### Instantiating the tour
 
@@ -42,13 +42,13 @@ p <- detour(pdf_df, tour_aes(
 ))
 ```
 
-The first argument to `detour()` is a data frame in tidy format containing the tour data and aesthetics. Enforcing the use of data frames encourages data-centric statistical thinking. The second argument defines the aesthetic mapping of data variables through the `tour_aes()` function, similar to {ggplot2}. The currently supported aesthetics are:
+The first argument to `detour()` is a data frame in tidy format containing the tour data and aesthetics. Enforcing the use of data frames encourages data-centric statistical thinking. The second argument defines the aesthetic mapping of data variables through the `tour_aes()` function, similar to \pkg{ggplot2}. The currently supported aesthetics are:
 
 - `projection`: (required) the numeric columns to be projected
 - `colour`: point colour
 - `label`: label text to be shown when the mouse is hovered over a point.
 
-These mappings support tidy evaluation and {tidyselect} syntax (@tidyselect) such as `starts_with()`, `where(is.numeric())`, column ranges using `col_1:col_n`, negation `-col_n`, and others, for easier column selection.
+These mappings support tidy evaluation and \CRANpkg{tidyselect} syntax (@tidyselect) such as `starts_with()`, `where(is.numeric())`, column ranges using `col_1:col_n`, negation `-col_n`, and others, for easier column selection.
 
 ### Generating the tour path
 
@@ -63,7 +63,7 @@ p
 
 The `tour_path()` function defines parameters for the tour such as:
 
-- `tour_path`: the tour path generator, e.g. `grand_tour()`, `guided_tour()`, or any other path generator compatible with the {tourr} package
+- `tour_path`: the tour path generator, e.g. `grand_tour()`, `guided_tour()`, or any other path generator compatible with the \pkg{tourr} package
 - `start`: the starting basis or projection matrix
 - `fps`: frames per second with which to display the animation. Defaults to 30 but can be increased for a smoother animation or decreased for very large data.
 - `max_bases`:  the number of basis frames to generate. A higher number will give a longer tour animation.
@@ -77,7 +77,7 @@ This form gives the user full visibility of the tour path, and allows the projec
 
 ### Creating the animation
 
-To display the tour animation, we simply pipe the output of `tour_path()` to any of the functions prefixed with `show_` provided by the {detourr} package. The available display functions are:
+To display the tour animation, we simply pipe the output of `tour_path()` to any of the functions prefixed with `show_` provided by the \pkg{detourr} package. The available display functions are:
 
 - `show_scatter()`: the core 2D or 3D scatter plot display
 - `show_slice()`: a slice tour display based on @laa2020slice
@@ -118,11 +118,11 @@ detour(pdf_df, tour_aes(
     show_scatter()
 ```
 
-This chaining process allows us to construct the tour visualisation incrementally in a way that is intuitive and easy to follow. The user is able to inspect the result at each step in the chain, and it aligns well with the _grammar of graphics_ and _tidy data_ workflows. This makes {detourr} accessible to newcomers who may not have worked with tours previously.
+This chaining process allows us to construct the tour visualisation incrementally in a way that is intuitive and easy to follow. The user is able to inspect the result at each step in the chain, and it aligns well with the _grammar of graphics_ and _tidy data_ workflows. This makes \pkg{detourr} accessible to newcomers who may not have worked with tours previously.
 
 ## Interactivity
 
- Presently, several well-developed R packages allow the use of web technologies in R; {HTMLWidgets} allows binding R code with HTML and JavaScript to create standalone widgets; {shiny} provides features for combining various elements in to interactive web applications powered by R; {crosstalk} (@crosstalk) enables linked selection and brushing between different HTML Widgets; and {rmarkdown} (@rmarkdown) allows creating HTML documents with HTML Widgets embedded within. The use of web technologies such as JavaScript enable the resulting visuals to be portable and accessible, and enable the implementation of rich interactive features. In this section we will describe these interactive features and how they can be configured.
+ Presently, several well-developed R packages allow the use of web technologies in R; \pkg{htmlwidgets} allows binding R code with HTML and JavaScript to create standalone widgets; \pkg{shiny} provides features for combining various elements in to interactive web applications powered by R; \CRANpkg{crosstalk} (@crosstalk) enables linked selection and brushing between different HTML Widgets; and \CRANpkg{rmarkdown} (@rmarkdown) allows creating HTML documents with HTML Widgets embedded within. The use of web technologies such as JavaScript enable the resulting visuals to be portable and accessible, and enable the implementation of rich interactive features. In this section we will describe these interactive features and how they can be configured.
 
 ### Label aesthetics
 
@@ -182,7 +182,7 @@ pdf_table <- controls_df |>
     )
 
 knitr::kable(pdf_table,
-    format = "latex", caption = "An overview of the interactive controls available in the {detourr} displays",
+    format = "latex", caption = "An overview of the interactive controls available in the \\pkg{detourr} displays",
     escape = FALSE,
     booktabs = TRUE
 ) |>
@@ -203,4 +203,4 @@ The timeline at the bottom of the widget controls play and pause, and allows for
 
 ### Linked selection and filtering
 
-{detourr} supports linked selection and filtering by integrating with {crosstalk}. When a {crosstalk} `SharedData` object is provided to `detour()` in place of a data frame, selections made using the _box selection_ tool will be reflected in all linked visuals. Likewise, any selection or filtering applied to a linked visual will be reflected by {detourr}. Compatible widgets include {plotly} (@plotly), {leaflet} (@leaflet), and {DT} (@dt). An example of this is shown in Section \@ref(sec:casestudylinked).
+\pkg{detourr} supports linked selection and filtering by integrating with \pkg{crosstalk}. When a \pkg{crosstalk} `SharedData` object is provided to `detour()` in place of a data frame, selections made using the _box selection_ tool will be reflected in all linked visuals. Likewise, any selection or filtering applied to a linked visual will be reflected by \pkg{detourr}. Compatible widgets include \CRANpkg{plotly} (@plotly), \CRANpkg{leaflet} (@leaflet), and \CRANpkg{DT} (@dt). An example of this is shown in the case study.

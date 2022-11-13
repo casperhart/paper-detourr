@@ -140,7 +140,7 @@ pdf_table <- controls_df |>
     )
 
 knitr::kable(pdf_table,
-    format = "latex", caption = "An overview of the interactive controls available in the {detourr} displays",
+    format = "latex", caption = "An overview of the interactive controls available in the \\pkg{detourr} displays",
     escape = FALSE,
     booktabs = TRUE
 ) |>
@@ -513,7 +513,7 @@ knitr::include_graphics(
 #> )
 
 
-## ----linked-tsne-full, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals of the tour using {detourr} (left) compared to a T-SNE dimension reduction (right)"----
+## ----linked-tsne-full, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals of the tour using \\\\pkg{detourr} (left) compared to a T-SNE dimension reduction (right)"----
 knitr::include_graphics("figures/mnist/case-study-linked-brushing-full.png")
 
 

@@ -7,7 +7,7 @@ A common task when analysing wide or sparse data sets is to generate embeddings;
 
 An example of this is the algorithm used for facial recognition in FaceNet (@schroff2015facenet). A neural network is trained which maps a vector representation of images of faces to a lower dimensional space. The network minimises the distance between examples of the same class and maximises distances between examples from different classes in the output space. The result is that the euclidean distance between faces can be used as a metric for face similarity, so an unknown face can be classified as belonging to a specific individual if the distance between the unknown face and one or more known faces is small.
 
-The datasets `mnist_embeddings_8d` and `mnist_embeddings_32d` in the {detourr} package are embeddings trained using a similar algorithm to FaceNet but using the MNIST (@lecun1998mnist) handwritten digits dataset. The training set consists of 60,000 28x28 pixel training images and in the following examples we visualise the test set containing 10,000 examples.
+The datasets `mnist_embeddings_8d` and `mnist_embeddings_32d` in the \pkg{detourr} package are embeddings trained using a similar algorithm to FaceNet but using the MNIST (@lecun1998mnist) handwritten digits dataset. The training set consists of 60,000 28x28 pixel training images and in the following examples we visualise the test set containing 10,000 examples.
 
 ## Scatterplot display
 
@@ -102,9 +102,9 @@ knitr::include_graphics(
 
 The _slice_ display highlights points based on their proximity to the projection plane. Points that are close to the projection plane are highlighted and those further away are faded out by making them transparent. In the case of the MNIST embedding data in Figure \@ref(fig:mnist-8d-slice) the ball structure of the data manifests as a clear circular void in the middle of the plot, with points highlighted only towards the edges. 
 
-## Linked selection {#sec:casestudylinked}
+## Linked selection
 
-Plot interactions such as selection and filtering can be helpful for identifying and exploring outliers, clusters, and other interesting features in a dataset. These are enhanced even further when multiple visuals are linked, and selections and filters are applied to all linked visuals. In this example, we compare the tour animation with the result of a T-SNE (@van2008tsne) which was performed using the excellent {Rtsne} R package (@van2015rtsne) and displayed using {plotly}. The visuals are linked using the R package {crosstalk} (@crosstalk) and a set of filter checkboxes is also added.
+Plot interactions such as selection and filtering can be helpful for identifying and exploring outliers, clusters, and other interesting features in a dataset. These are enhanced even further when multiple visuals are linked, and selections and filters are applied to all linked visuals. In this example, we compare the tour animation with the result of a T-SNE (@van2008tsne) which was performed using the excellent \CRANpkg{Rtsne} R package (@van2015rtsne) and displayed using \pkg{plotly}. The visuals are linked using the R package \pkg{crosstalk} and a set of filter checkboxes is also added.
 
 ```{r, eval=FALSE}
 library(crosstalk)
@@ -150,7 +150,7 @@ bscols(
 )
 ```
 
-```{r linked-tsne-full, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals of the tour using {detourr} (left) compared to a T-SNE dimension reduction (right)"}
+```{r linked-tsne-full, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals of the tour using \\\\pkg{detourr} (left) compared to a T-SNE dimension reduction (right)"}
 knitr::include_graphics("figures/mnist/case-study-linked-brushing-full.png")
 ```
 

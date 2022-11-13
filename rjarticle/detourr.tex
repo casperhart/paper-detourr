@@ -1,12 +1,12 @@
 % !TeX root = RJwrapper.tex
-\title{\{detourr\}: Interactive and Performant Tour Animations}
+\title{Taking the Scenic Route: Interactive and Performant Tour Animations}
 \author{by Casper Hart and Earo Wang}
 
 \maketitle
 
 \abstract{%
 The tour provides a useful vehicle for exploring high dimensional datasets. It works by combining a sequence of projections---the tour path---in to an animation---the display method. Current display implementations in R are limited in their interactivity and portability, and give poor performance and jerky animations even for small datasets.
-We take a detour into web technologies, such as Three.js and WebGL, to support smooth and performant tour visualisations. The R package \{detourr\} implements a set of display tools using \{htmlwidgets\} and TypeScript that allow for rich interactions (including orbit controls, scrubbing, and brushing) and smooth animations for large datasets. It provides a declarative R interface which is accessible to new users, and it supports linked views using \{crosstalk\} and \{shiny\}. The resulting animations are portable across a wide range of browsers and devices. We also extend the radial transformation of the Sage Tour (Laa, Cook, and Lee (2021)) to 3 or more dimensions with an implementation in 3D, and provide a simplified implementation of the Slice Tour (Laa, Cook, and Valencia (2020)).
+We take a detour into web technologies, such as Three.js and WebGL, to support smooth and performant tour visualisations. The R package \pkg{detourr} implements a set of display tools using \pkg{htmlwidgets} and TypeScript that allow for rich interactions (including orbit controls, scrubbing, and brushing) and smooth animations for large datasets. It provides a declarative R interface which is accessible to new users, and it supports linked views using \pkg{crosstalk} and \pkg{shiny}. The resulting animations are portable across a wide range of browsers and devices. We also extend the radial transformation of the Sage Tour (Laa, Cook, and Lee (2021)) to 3 or more dimensions with an implementation in 3D, and provide a simplified implementation of the Slice Tour (Laa, Cook, and Valencia (2020)).
 }
 
 \hypertarget{introduction}{%
@@ -18,7 +18,7 @@ Several methods exist for high dimensional data visualisation. Given a data matr
 
 Rather than generating a single static visual, the \emph{tour} (Asimov 1985); (Buja et al. 2005) works by combining a smooth sequence of projections in to an animation, which can then be viewed using a variety of different \emph{display methods} (Wickham et al. 2011). This allows the viewer to explore the data from a number of different perspectives while being able to visually connect what would otherwise be disjointed views. However, existing display implementations for tours in R are limited in their interactivity, performance, and portability, and generally result in jerky animations even for small datasets.
 
-In this paper we introduce a new R package called \CRANpkg{detourr}, which provides portable and performant display methods for tours. In the first section we give a background of tours and review a few existing software implementations, and in the section following we describe how the software is used. We will then highlight some of the implementation decisions related to performace, and later provide a case study using embeddings created from the MNIST (LeCun 1998) dataset. In the final section we will discuss how this work might be extended in future.
+In this paper we introduce a new R package called \CRANpkg{detourr}, which provides portable and performant display methods for tours. In the first section we give a background of tours and review a few existing software implementations, and in the section following we describe how the software is used. We will then highlight some of the implementation decisions related to performance, and later provide a case study using embeddings created from the MNIST (LeCun 1998) dataset. In the final section we will discuss how this work might be extended in future.
 
 \hypertarget{background-and-related-works}{%
 \section{Background and related works}\label{background-and-related-works}}
@@ -41,7 +41,7 @@ In all of these, the tour path is calculated in two steps; the target basis is c
 \hypertarget{display-methods}{%
 \subsection{Display methods}\label{display-methods}}
 
-The typical display methods for tours include histograms or density plots for 1D projections, and x-y scatter plots for 2D ones. 3D data can be viewed by a 3D scatterplot with a virtual perspective camera to enable displaying on a monitor. This can be enhanced with fog to make closer points more prominent, and interactive rotation controls to give a more immersive 3D experience. Projections with 3 or more dimensions can be displayed using parallel coordinates plots. Other displays exist such as Andrew's plot (Andrews 1972), where each point is represented by a fourier curve plotted between \(-\pi\) and \(\pi\).
+The typical display methods for tours include histograms or density plots for 1D projections, and x-y scatter plots for 2D ones. 3D data can be viewed by a 3D scatterplot with a virtual perspective camera to enable displaying on a monitor. This can be enhanced with fog to make closer points more prominent, and interactive rotation controls to give a more immersive 3D experience. Projections with 3 or more dimensions can be displayed using parallel coordinates plots. Other displays exist such as Andrew's plot (Andrews 1972), where each point is represented by a Fourier curve plotted between \(-\pi\) and \(\pi\).
 
 These display methods can be enhanced to display additional information, for example the \emph{slice tour} described in (Laa, Cook, and Valencia 2020) highlight points whose orthogonal distance to the projection plane is smaller than some threshold, and fade out points that are further away. This is good for finding hollowness in data, with an example shown in the case study.
 
@@ -61,14 +61,14 @@ The \CRANpkg{langevitour} R package instead uses the \CRANpkg{htmlwidgets} packa
 \hypertarget{usage-and-interactivity}{%
 \section{Usage and interactivity}\label{usage-and-interactivity}}
 
-The \{tourr\} package implements a functional approach to building tours can be intimidating to new users. Further, the use of the R graphics device and exporting of GIF images limit the interactivity that can be achieved. When designing the user API for \{detourr\} a data-oriented approach is taken to make it more approachable, and the visuals are built in JavaScript to enable rich user interactions. \{detourr\} also supports the full suite of tour path generating functions from the \{tourr\} package. The result is an experience that is powerful, immersive, and accessible to newcomers.
+The \pkg{tourr} package implements a functional approach to building tours can be intimidating to new users. Further, the use of the R graphics device and exporting of GIF images limit the interactivity that can be achieved. When designing the user API for \pkg{detourr} a data-oriented approach is taken to make it more approachable, and the visuals are built in JavaScript to enable rich user interactions. \pkg{detourr} also supports the full suite of tour path generating functions from the \pkg{tourr} package. The result is an experience that is powerful, immersive, and accessible to newcomers.
 
 This chapter is structured as follows. The first section describes the user API in R and supported features, the second describes how the user can interact with the resulting visual. Throughout the chapter, we use the \texttt{pdfSense} dataset (Wang et al. (2018); Lee (2021)) to provide a running example. This data set consists of 2808 observations and 56 input variables from CT14HERA parton distribution function fits. The first 6 principal components are used to create the tour, accounting for \textasciitilde55\% of the variance in the data.
 
 \hypertarget{user-interface}{%
 \subsection{User interface}\label{user-interface}}
 
-\{detourr\} has a data-oriented user interface heavily influenced by the Tidy Data (Wickham (2014)) workflow, Grammar of Graphics (Wilkinson (2012); Wickham (2010)), and \{ggplot2\} (Wickham (2016)). The visualisation is built in a sequence of steps which follow the logical flow of data in the tour building process, which makes the API intuitive and accessible.
+\pkg{detourr} has a data-oriented user interface heavily influenced by the Tidy Data (Wickham (2014)) workflow, Grammar of Graphics (Wilkinson (2012); Wickham (2010)), and \CRANpkg{ggplot2} (Wickham (2016)). The visualisation is built in a sequence of steps which follow the logical flow of data in the tour building process, which makes the API intuitive and accessible.
 
 \hypertarget{instantiating-the-tour}{%
 \subsubsection{Instantiating the tour}\label{instantiating-the-tour}}
@@ -83,7 +83,7 @@ p <- detour(pdf_df, tour_aes(
 ))
 \end{verbatim}
 
-The first argument to \texttt{detour()} is a data frame in tidy format containing the tour data and aesthetics. Enforcing the use of data frames encourages data-centric statistical thinking. The second argument defines the aesthetic mapping of data variables through the \texttt{tour\_aes()} function, similar to \{ggplot2\}. The currently supported aesthetics are:
+The first argument to \texttt{detour()} is a data frame in tidy format containing the tour data and aesthetics. Enforcing the use of data frames encourages data-centric statistical thinking. The second argument defines the aesthetic mapping of data variables through the \texttt{tour\_aes()} function, similar to \pkg{ggplot2}. The currently supported aesthetics are:
 
 \begin{itemize}
 \tightlist
@@ -95,7 +95,7 @@ The first argument to \texttt{detour()} is a data frame in tidy format containin
   \texttt{label}: label text to be shown when the mouse is hovered over a point.
 \end{itemize}
 
-These mappings support tidy evaluation and \{tidyselect\} syntax (Henry and Wickham (2022)) such as \texttt{starts\_with()}, \texttt{where(is.numeric())}, column ranges using \texttt{col\_1:col\_n}, negation \texttt{-col\_n}, and others, for easier column selection.
+These mappings support tidy evaluation and \CRANpkg{tidyselect} syntax (Henry and Wickham (2022)) such as \texttt{starts\_with()}, \texttt{where(is.numeric())}, column ranges using \texttt{col\_1:col\_n}, negation \texttt{-col\_n}, and others, for easier column selection.
 
 \hypertarget{generating-the-tour-path}{%
 \subsubsection{Generating the tour path}\label{generating-the-tour-path}}
@@ -110,7 +110,7 @@ p
 \end{verbatim}
 
 \begin{verbatim}
-#> # A tibble: 461 x 2
+#> # A tibble: 453 x 2
 #>   is_new_basis projection_matrix
 #>   <lgl>        <list>           
 #> 1 TRUE         <dbl [6 x 3]>    
@@ -118,7 +118,7 @@ p
 #> 3 FALSE        <dbl [6 x 3]>    
 #> 4 FALSE        <dbl [6 x 3]>    
 #> 5 FALSE        <dbl [6 x 3]>    
-#> # ... with 456 more rows
+#> # ... with 448 more rows
 \end{verbatim}
 
 The \texttt{tour\_path()} function defines parameters for the tour such as:
@@ -126,7 +126,7 @@ The \texttt{tour\_path()} function defines parameters for the tour such as:
 \begin{itemize}
 \tightlist
 \item
-  \texttt{tour\_path}: the tour path generator, e.g.~\texttt{grand\_tour()}, \texttt{guided\_tour()}, or any other path generator compatible with the \{tourr\} package
+  \texttt{tour\_path}: the tour path generator, e.g.~\texttt{grand\_tour()}, \texttt{guided\_tour()}, or any other path generator compatible with the \pkg{tourr} package
 \item
   \texttt{start}: the starting basis or projection matrix
 \item
@@ -151,7 +151,7 @@ This form gives the user full visibility of the tour path, and allows the projec
 \hypertarget{creating-the-animation}{%
 \subsubsection{Creating the animation}\label{creating-the-animation}}
 
-To display the tour animation, we simply pipe the output of \texttt{tour\_path()} to any of the functions prefixed with \texttt{show\_} provided by the \{detourr\} package. The available display functions are:
+To display the tour animation, we simply pipe the output of \texttt{tour\_path()} to any of the functions prefixed with \texttt{show\_} provided by the \pkg{detourr} package. The available display functions are:
 
 \begin{itemize}
 \tightlist
@@ -203,12 +203,12 @@ detour(pdf_df, tour_aes(
     show_scatter()
 \end{verbatim}
 
-This chaining process allows us to construct the tour visualisation incrementally in a way that is intuitive and easy to follow. The user is able to inspect the result at each step in the chain, and it aligns well with the \emph{grammar of graphics} and \emph{tidy data} workflows. This makes \{detourr\} accessible to newcomers who may not have worked with tours previously.
+This chaining process allows us to construct the tour visualisation incrementally in a way that is intuitive and easy to follow. The user is able to inspect the result at each step in the chain, and it aligns well with the \emph{grammar of graphics} and \emph{tidy data} workflows. This makes \pkg{detourr} accessible to newcomers who may not have worked with tours previously.
 
 \hypertarget{interactivity}{%
 \subsection{Interactivity}\label{interactivity}}
 
-Presently, several well-developed R packages allow the use of web technologies in R; \{HTMLWidgets\} allows binding R code with HTML and JavaScript to create standalone widgets; \{shiny\} provides features for combining various elements in to interactive web applications powered by R; \{crosstalk\} (Cheng and Sievert (2022)) enables linked selection and brushing between different HTML Widgets; and \{rmarkdown\} (Allaire et al. (2022)) allows creating HTML documents with HTML Widgets embedded within. The use of web technologies such as JavaScript enable the resulting visuals to be portable and accessible, and enable the implementation of rich interactive features. In this section we will describe these interactive features and how they can be configured.
+Presently, several well-developed R packages allow the use of web technologies in R; \pkg{htmlwidgets} allows binding R code with HTML and JavaScript to create standalone widgets; \pkg{shiny} provides features for combining various elements in to interactive web applications powered by R; \CRANpkg{crosstalk} (Cheng and Sievert (2022)) enables linked selection and brushing between different HTML Widgets; and \CRANpkg{rmarkdown} (Allaire et al. (2022)) allows creating HTML documents with HTML Widgets embedded within. The use of web technologies such as JavaScript enable the resulting visuals to be portable and accessible, and enable the implementation of rich interactive features. In this section we will describe these interactive features and how they can be configured.
 
 \hypertarget{label-aesthetics}{%
 \subsubsection{Label aesthetics}\label{label-aesthetics}}
@@ -226,7 +226,7 @@ Table \ref{tab:pdf-controls} shows a breakdown of the controls found on the left
 
 \begin{table}
 
-\caption{\label{tab:pdf-controls}An overview of the interactive controls available in the {detourr} displays}
+\caption{\label{tab:pdf-controls}An overview of the interactive controls available in the \pkg{detourr} displays}
 \centering
 \begin{tabular}[t]{>{\raggedright\arraybackslash}p{0.2\textwidth}>{\raggedright\arraybackslash}p{0.2\textwidth}>{\raggedright\arraybackslash}p{0.6\textwidth}}
 \toprule
@@ -257,16 +257,16 @@ The timeline at the bottom of the widget controls play and pause, and allows for
 \hypertarget{linked-selection-and-filtering}{%
 \subsubsection{Linked selection and filtering}\label{linked-selection-and-filtering}}
 
-\{detourr\} supports linked selection and filtering by integrating with \{crosstalk\}. When a \{crosstalk\} \texttt{SharedData} object is provided to \texttt{detour()} in place of a data frame, selections made using the \emph{box selection} tool will be reflected in all linked visuals. Likewise, any selection or filtering applied to a linked visual will be reflected by \{detourr\}. Compatible widgets include \{plotly\} (Sievert (2020)), \{leaflet\} (Cheng, Karambelkar, and Xie (2022)), and \{DT\} (Xie, Cheng, and Tan (2022)). An example of this is shown in Section \ref{sec:casestudylinked}.
+\pkg{detourr} supports linked selection and filtering by integrating with \pkg{crosstalk}. When a \pkg{crosstalk} \texttt{SharedData} object is provided to \texttt{detour()} in place of a data frame, selections made using the \emph{box selection} tool will be reflected in all linked visuals. Likewise, any selection or filtering applied to a linked visual will be reflected by \pkg{detourr}. Compatible widgets include \CRANpkg{plotly} (Sievert (2020)), \CRANpkg{leaflet} (Cheng, Karambelkar, and Xie (2022)), and \CRANpkg{DT} (Xie, Cheng, and Tan (2022)). An example of this is shown in the case study.
 
 \hypertarget{web-technologies-for-performance}{%
 \section{Web technologies for performance}\label{web-technologies-for-performance}}
 
-One of the goals of this work is to improve upon the animation performance of existing tour displays. \{detourr\} uses several different web technologies to maximise performance so that smooth animations can be played with large data sets consisting of upwards of 100k data points. This performance also enables the animations to work with less powerful devices, making \{detourr\} accessible to a wider range of users.
+One of the goals of this work is to improve upon the animation performance of existing tour displays. \pkg{detourr} uses several different web technologies to maximise performance so that smooth animations can be played with large data sets consisting of upwards of 100k data points. This performance also enables the animations to work with less powerful devices, making \pkg{detourr} accessible to a wider range of users.
 
 The primary technology that allows for high-performance data visualisation is JavaScript itself. JavaScript engines in browsers such as Chrome and Firefox are highly optimised, leveraging methods such as Just-In-Time (JIT) compilation for improved runtime speed. However JavaScript is single-threaded, dynamically typed, and garbage collected, so despite these optimisations we can still run in to performance bottlenecks in some situations.
 
-Figure \ref{fig:dataflow} shows a simplified overview of the data flow in \{detourr\} when creating and viewing a widget. On the left are the operations that are performed by R, which only occur once when the visual is first created and have a minimal performance impact. On the right are the main operations performed by JavaScript when the widget is displayed in a browser or IDE. Linear algebra and rendering operations need to run 30 times per second, so the technology decisions surrounding them have a big impact on performance. These technology decisions and are discussed in this chapter.
+Figure \ref{fig:dataflow} shows a simplified overview of the data flow in \pkg{detourr} when creating and viewing a widget. On the left are the operations that are performed by R, which only occur once when the visual is first created and have a minimal performance impact. On the right are the main operations performed by JavaScript when the widget is displayed in a browser or IDE. Linear algebra and rendering operations need to run 30 times per second, so the technology decisions surrounding them have a big impact on performance. These technology decisions and are discussed in this chapter.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{detourr_files/figure-latex/dataflow-1} \caption{An overview of the data flow when creating a detourr visualisation. The full tour path is generated in R and then passed to JavaScript when the widget is created. The operations that occur in the animation loop in JavaScript are the most important to optimise.}\label{fig:dataflow}
@@ -277,7 +277,7 @@ Figure \ref{fig:dataflow} shows a simplified overview of the data flow in \{deto
 
 The single-threaded nature of JavaScript makes matrix multiplication a performance bottleneck. At each animation frame, we must calculate the product \(\mathbf{XA}\) where \(\mathbf{X}\) is our data matrix and \(\mathbf{A}\) is our projection matrix. The slice tour generated by the \texttt{show\_slice()} display function requires an additional step of calculating the distance from each point to the projection plane which involves several more matrix operations.
 
-To address this, \{detourr\} uses TensorFlow.js (Abadi et al. (2016)) as the main library for storing data and projection matrices and performing matrix operations. TensorFlow.js requires the user chose between one of three available backends:
+To address this, \pkg{detourr} uses TensorFlow.js (Abadi et al. (2016)) as the main library for storing data and projection matrices and performing matrix operations. TensorFlow.js requires the user chose between one of three available backends:
 
 \textbf{CPU} is a single-threaded JavaScript implementation which carries with it the limitations of JavaScript dynamic typing and garbage collection causing non-deterministic slow-downs at runtime.
 
@@ -341,7 +341,7 @@ When displaying data visuals using JavaScript in a browser, there are three main
 
 \textbf{SVG} is commonly used for web-based visuals, including in software such as D3.js (Bostock, Ogievetsky, and Heer (2011)) with good support for interaction and animation. Kipp, Laa, and Cook (2019) uses D3.js with SVG for rendering tours, but describes performance issues when the number of points gets close to 2,000. This is because while SVG is suitable for drawing large and complex shapes, performance can degrade when rendering many individual shapes.
 
-\textbf{HTML5 Canvas (2D)} uses a canvas element with a 2D rendering context and provides good performance, allowing many thousand data points to be used with smooth animation. This is the rendering method used by the \{langevitour\} package, and provides much better performance over SVG for this use case.
+\textbf{HTML5 Canvas (2D)} uses a canvas element with a 2D rendering context and provides good performance, allowing many thousand data points to be used with smooth animation. This is the rendering method used by the \pkg{langevitour} package, and provides much better performance over SVG for this use case.
 
 \textbf{HTML5 Canvas (WebGL)} uses the WebGL rendering context with GPU acceleration to achieve high performance, and is used by a range of browser-based 3D animations and games. This typically provides higher performance than using the 2D canvas rendering context.
 
@@ -349,12 +349,12 @@ When displaying data visuals using JavaScript in a browser, there are three main
 
 One downside of using HTML5 Canvas elements is that custom logic is needed to determine where the mouse pointer is relative to visual elements when interactions occur. This issue is resolved is by rendering the image twice; the first pass renders to the screen and the second renders to an invisible ``picking'' scene. The colours of the points in this picking scene correspond to the ID of the point that was rendered. When a mouse is hovered over a pixel or a set of pixels are selected, we simply check their colour in the picking scene to determine which point IDs relate to the event. Rendering the scene twice at each frame makes performance all the more important.
 
-Despite this extra step, a naive performance benchmark of the rendering performance of \{detourr\} using the \texttt{mnist\_embeddings\_8d} data set at 30 FPS shows only 3\% of the time is devoted to rendering and painting points, which for our use case is negligible.
+Despite this extra step, a naive performance benchmark of the rendering performance of \pkg{detourr} using the \texttt{mnist\_embeddings\_8d} data set at 30 FPS shows only 3\% of the time is devoted to rendering and painting points, which for our use case is negligible.
 
 \hypertarget{display-methods-1}{%
 \section{Display methods}\label{display-methods-1}}
 
-There are three display functions implemented in the \{detourr\} package: \texttt{show\_scatter()}, \texttt{show\_sage()}, and \texttt{show\_slice()}. All three support 2D and 3D tour paths, and are based on the core \texttt{show\_scatter()} function. In this section, we will delve in to some of the implementation details of these functions and how the original and \emph{sage} display has been extended to three dimensions.
+There are three display functions implemented in the \pkg{detourr} package: \texttt{show\_scatter()}, \texttt{show\_sage()}, and \texttt{show\_slice()}. All three support 2D and 3D tour paths, and are based on the core \texttt{show\_scatter()} function. In this section, we will delve in to some of the implementation details of these functions and how the original and \emph{sage} display has been extended to three dimensions.
 
 \hypertarget{scatter-display}{%
 \subsection{Scatter display}\label{scatter-display}}
@@ -366,7 +366,7 @@ The scatter display forms the core of the three display methods, and contains al
 
 The slice display is implemented in the \texttt{show\_slice()} function, and is based on the \emph{slice tour} described in Laa, Cook, and Valencia (2020). At each animation frame, the distance from each point to the projection plane is computed. Those points closer than some threshold \(h\) to the projection plane are highlighted, and those further away are greyed out. Slices offset from the origin are also supported.
 
-Despite the slice tour itself being equivalent to that in \{tourr\}, the implementation has been modified for a simpler implementation. Laa, Cook, and Valencia (2020) calculates the distance as:
+Despite the slice tour itself being equivalent to that in \pkg{tourr}, the implementation has been modified for a simpler implementation. Laa, Cook, and Valencia (2020) calculates the distance as:
 
 \[
 \tilde \nu_i^2 = ||\mathbf{x}_i^\prime||^2
@@ -448,7 +448,7 @@ Figure \ref{fig:slice-sphere} shows a slice tour implemented using equations \eq
 \hypertarget{sage-display}{%
 \subsection{Sage display}\label{sage-display}}
 
-As the dimension of data increases, the volume of space that contains the data increases exponentially. One effect of this is that points tend to sit close to the edge of the space, with few points near the center. Hastie et al. (2001) gives a good illustration of this, where if we have \(N\) uniformly distributed points in a unit ball of dimension \(p\) centered at the origin, the median distance from the origin to the closest point is given by the equation
+As the dimension of data increases, the volume of space that contains the data increases exponentially. One effect of this is that points tend to sit close to the edge of the space, with few points near the center. Hastie et al. (2001) gives a good illustration of this, where if we have \(N\) uniformly distributed points in a unit ball of dimension \(p\) centred at the origin, the median distance from the origin to the closest point is given by the equation
 
 \begin{equation}
 d(p, N) = \left( 1- \frac{1}{2}^\frac{1}{N}\right)^\frac{1}{p}
@@ -510,7 +510,7 @@ This differs from the original implementation described in Laa, Cook, and Lee (2
 
 Laa, Cook, and Lee (2021) provides the equation for the relative projected volume at radius \(r\) on to a two dimensional disk for the 2-dimensional sage display. In this thesis, we extend and implement the scatter, sage, and slice displays in 3D, and to do this we needed to calculate the relative projected volume for the case of a 3-dimensional projection.
 
-In appendix \ref{app:a} we show that the relative projected volume for a \textbf{sphere} at radius \(r\) is given by:
+In the appendix we show that the relative projected volume for a \textbf{sphere} at radius \(r\) is given by:
 
 \begin{equation}
   v_3(r; p, R) = \mathrm{BetaInc}\left(\left(\frac{r}{R}\right)^2, \frac{3}{2}, \frac{p-1}{2}\right) 
@@ -554,7 +554,7 @@ A common task when analysing wide or sparse data sets is to generate embeddings;
 
 An example of this is the algorithm used for facial recognition in FaceNet (Schroff, Kalenichenko, and Philbin (2015)). A neural network is trained which maps a vector representation of images of faces to a lower dimensional space. The network minimises the distance between examples of the same class and maximises distances between examples from different classes in the output space. The result is that the euclidean distance between faces can be used as a metric for face similarity, so an unknown face can be classified as belonging to a specific individual if the distance between the unknown face and one or more known faces is small.
 
-The datasets \texttt{mnist\_embeddings\_8d} and \texttt{mnist\_embeddings\_32d} in the \{detourr\} package are embeddings trained using a similar algorithm to FaceNet but using the MNIST (LeCun (1998)) handwritten digits dataset. The training set consists of 60,000 28x28 pixel training images and in the following examples we visualise the test set containing 10,000 examples.
+The datasets \texttt{mnist\_embeddings\_8d} and \texttt{mnist\_embeddings\_32d} in the \pkg{detourr} package are embeddings trained using a similar algorithm to FaceNet but using the MNIST (LeCun (1998)) handwritten digits dataset. The training set consists of 60,000 28x28 pixel training images and in the following examples we visualise the test set containing 10,000 examples.
 
 \hypertarget{scatterplot-display}{%
 \subsection{Scatterplot display}\label{scatterplot-display}}
@@ -599,13 +599,13 @@ The \emph{sage} display scales points outwards based on their radius so that the
 
 The \emph{slice} display highlights points based on their proximity to the projection plane. Points that are close to the projection plane are highlighted and those further away are faded out by making them transparent. In the case of the MNIST embedding data in Figure \ref{fig:mnist-8d-slice} the ball structure of the data manifests as a clear circular void in the middle of the plot, with points highlighted only towards the edges.
 
-\hypertarget{sec:casestudylinked}{%
-\subsection{Linked selection}\label{sec:casestudylinked}}
+\hypertarget{linked-selection}{%
+\subsection{Linked selection}\label{linked-selection}}
 
-Plot interactions such as selection and filtering can be helpful for identifying and exploring outliers, clusters, and other interesting features in a dataset. These are enhanced even further when multiple visuals are linked, and selections and filters are applied to all linked visuals. In this example, we compare the tour animation with the result of a T-SNE (Van der Maaten and Hinton (2008)) which was performed using the excellent \{Rtsne\} R package (Krijthe (2015)) and displayed using \{plotly\}. The visuals are linked using the R package \{crosstalk\} (Cheng and Sievert (2022)) and a set of filter checkboxes is also added.
+Plot interactions such as selection and filtering can be helpful for identifying and exploring outliers, clusters, and other interesting features in a dataset. These are enhanced even further when multiple visuals are linked, and selections and filters are applied to all linked visuals. In this example, we compare the tour animation with the result of a T-SNE (Van der Maaten and Hinton (2008)) which was performed using the excellent \CRANpkg{Rtsne} R package (Krijthe (2015)) and displayed using \pkg{plotly}. The visuals are linked using the R package \pkg{crosstalk} and a set of filter checkboxes is also added.
 
 \begin{figure}
-\includegraphics[width=\textwidth]{figures/mnist/case-study-linked-brushing-full} \caption{Linked visuals of the tour using {detourr} (left) compared to a T-SNE dimension reduction (right)}\label{fig:linked-tsne-full}
+\includegraphics[width=\textwidth]{figures/mnist/case-study-linked-brushing-full} \caption{Linked visuals of the tour using \\pkg{detourr} (left) compared to a T-SNE dimension reduction (right)}\label{fig:linked-tsne-full}
 \end{figure}
 
 Figure \ref{fig:linked-tsne-full} shows the linked visuals in their initial state with no filtering applied. We can then use the selection tool in either of the visuals to highlight points, and see the highlighting applied to both visuals as in Figure \ref{fig:linked-tsne-selection}.
@@ -623,13 +623,13 @@ Figure \ref{fig:linked-tsne-filter} shows the result of filtering the visuals us
 \hypertarget{conclusion-and-future-work}{%
 \section{Conclusion and future work}\label{conclusion-and-future-work}}
 
-In this paper we have introduced \{detour\} which provides interactive, performant, and portable tour visualisations from R. We accomplish these things using web technologies; TensorFlow.js (Abadi et al. (2016)) provides fast linear algebra operations through WebAssembly, Three.js provides GPU rendering via WebGL, and JavaScript \& HTML enable good performance and interactive features across the board. We also provide a simplified implementation of the Slice display (Laa, Cook, and Valencia (2020)), and have generalised the radial transformation from the Sage display (Laa, Cook, and Lee (2021)) to work with tours of 3 or more dimensions. All of this is done with an intuitive user interface which makes the software accessible to new users.
+In this paper we have introduced \pkg{detourr} which provides interactive, performant, and portable tour visualisations from R. We accomplish these things using web technologies; TensorFlow.js (Abadi et al. (2016)) provides fast linear algebra operations through WebAssembly, Three.js provides GPU rendering via WebGL, and JavaScript \& HTML enable good performance and interactive features across the board. We also provide a simplified implementation of the Slice display (Laa, Cook, and Valencia (2020)), and have generalised the radial transformation from the Sage display (Laa, Cook, and Lee (2021)) to work with tours of 3 or more dimensions. All of this is done with an intuitive user interface which makes the software accessible to new users.
 
-Looking ahead, the priority for the next stage of development is to leverage \{detourr\}'s extensible design to implement additional display methods such as density plots, histograms, parallel coordinates plots, and Andrew's plot. Additional changes could also be made to allow the radial transformation of the sage display and the highlighting of points from the slice display to be incorporated in to these other display methods, rather than being limited to only the scatter plot display. This would also allow the additional information from both the sage and slice tour applied to the same visual.
+Looking ahead, the priority for the next stage of development is to leverage \pkg{detourr}'s extensible design to implement additional display methods such as density plots, histograms, parallel coordinates plots, and Andrew's plot. Additional changes could also be made to allow the radial transformation of the sage display and the highlighting of points from the slice display to be incorporated in to these other display methods, rather than being limited to only the scatter plot display. This would also allow the additional information from both the sage and slice tour applied to the same visual.
 
 Further enhancements could be made by implementing facetting; allowing grouped data to be displayed across separate visuals with unified controls and timeline added. This could be taken further by allowing multiple \emph{different} displays to use the same controls and timeline, for example displaying a scatter plot alongside one or more density plots.
 
-To extend the existing scatter plot displays, the addition of an interactive legend would greatly enhance the user experience. As well as providing context for the point colour / fill, this would allow the user to be able to filter groups without needing to use a separate package like \{shiny\} or \{crosstalk\}. A shape aesthetic would also be beneficial, and the ability to export the projection matrix at the current frame would make it easier to perform analysis once an interesting projection is found.
+To extend the existing scatter plot displays, the addition of an interactive legend would greatly enhance the user experience. As well as providing context for the point colour / fill, this would allow the user to be able to filter groups without needing to use a separate package like \pkg{shiny} or \pkg{crosstalk}. A shape aesthetic would also be beneficial, and the ability to export the projection matrix at the current frame would make it easier to perform analysis once an interesting projection is found.
 
 As well as being able to display points and lines, support for plotting surfaces would allow for rich visualisations of regression model fits and classification boundaries. Three.js has good support for drawing surfaces, however it's not clear how a decision boundary can be projected down to a lower number of dimensions or whether this is actually feasible.
 
@@ -639,11 +639,8 @@ What's more, Three.js has support for VR, which would be an interesting addition
 
 \pagebreak
 
-\hypertarget{appendix}{%
-\section{Appendix}\label{appendix}}
-
-\hypertarget{app:a}{%
-\subsection{Radial CDF of hyperspheres projected to 3 dimensions}\label{app:a}}
+\hypertarget{radial-cdf-of-hyperspheres-projected-to-3-dimensions}{%
+\section{Radial CDF of hyperspheres projected to 3 dimensions}\label{radial-cdf-of-hyperspheres-projected-to-3-dimensions}}
 
 In order to implement the 3D variant of the sage tour (Laa, Cook, and Lee (2021)), we need an expression for the relative projected volume of a \textbf{sphere} of radius \(R\). This is then used as a scaling factor for point radii in the visualisation to prevent points from being crowded towards the centre.
 

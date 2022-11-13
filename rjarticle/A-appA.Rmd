@@ -2,9 +2,7 @@
 knit: "rmarkdown::render('detourr.rmd')"
 ---
 
-# Appendix {.appendix}
-
-## Radial CDF of hyperspheres projected to 3 dimensions {#app:a .appendix}
+# Radial CDF of hyperspheres projected to 3 dimensions {.appendix}
 
 In order to implement the 3D variant of the sage tour (@laa2021burning), we need an expression for the relative projected volume of a __sphere__ of radius $R$. This is then used as a scaling factor for point radii in the visualisation to prevent points from being crowded towards the centre.
 
