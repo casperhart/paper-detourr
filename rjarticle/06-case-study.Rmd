@@ -90,7 +90,7 @@ detour(mnist_embeddings_8d, tour_aes(
     show_slice()
 ```
 
-```{r mnist-8d-slice, out.width="49%", fig.ncol=3, fig.show="hold", fig.align="center", fig.cap="selected frames of the 8-dimensional MNIST embeddings data using show\\_slice() as the display method. The slice display makes the hollowness of this data apparent."}
+```{r mnist-8d-slice, out.width="49%", fig.ncol=3, fig.show="hold", fig.align="center", fig.cap="Selected frames of the 8-dimensional MNIST embeddings data using show\\_slice() as the display method. The slice display makes the hollowness of this data apparent."}
 knitr::include_graphics(
     c(
         "figures/mnist/mnist-8d-slice-1.png",
@@ -104,23 +104,41 @@ The _slice_ display highlights points based on their proximity to the projection
 
 ## Linked selection
 
-Plot interactions such as selection and filtering can be helpful for identifying and exploring outliers, clusters, and other interesting features in a dataset. These are enhanced even further when multiple visuals are linked, and selections and filters are applied to all linked visuals. In this example, we compare the tour animation with the result of a T-SNE (@van2008tsne) which was performed using the excellent \CRANpkg{Rtsne} R package (@van2015rtsne) and displayed using \pkg{plotly}. The visuals are linked using the R package \pkg{crosstalk} and a set of filter checkboxes is also added.
+Plot interactions such as selection and filtering can be helpful for identifying and exploring outliers, clusters, and other interesting features in a dataset. These are enhanced even further when multiple visuals are linked, and selections and filters are applied to all linked visuals. In this example, we compare the tour animation with the result of a T-SNE (@van2008tsne) which was performed using the excellent \CRANpkg{Rtsne} R package (@van2015rtsne) and displayed using \pkg{plotly}. The visuals are linked using the R package \pkg{crosstalk} and a set of filter checkboxes is also added. 
 
-```{r, eval=FALSE}
+```{r linked-tsne-full, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals of the tour using detourr (left) compared to a T-SNE dimension reduction (right)"}
+knitr::include_graphics("figures/mnist/case-study-linked-brushing-full.png")
+```
+
+Figure \@ref(fig:linked-tsne-full) shows the linked visuals in their initial state with no filtering applied. We can then use the selection tool in either of the visuals to highlight points, and see the highlighting applied to both visuals as in Figure \@ref(fig:linked-tsne-selection).
+
+```{r linked-tsne-selection, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals with selection applied. Points can be selected in either visual via click-and-drag and the selection will be reflected in both."}
+knitr::include_graphics("figures/mnist/case-study-linked-brushing-selection.png")
+```
+
+Figure \@ref(fig:linked-tsne-filter) shows the result of filtering the visuals using the filter checkboxes on the left. In the filtered visual, outlying points are much easier to see, and they can be easily investigated using tooltips. 
+
+```{r linked-tsne-filter, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals with filtering applied. Viewing each digit individually makes outlying points much more apparent, and those points can be identified using tooltips."}
+knitr::include_graphics("figures/mnist/case-study-linked-brushing-filter.png")
+```
+
+\pagebreak
+
+The code used to produce figures \@ref(fig:linked-tsne-full), \@ref(fig:linked-tsne-selection), and \@ref(fig:linked-tsne-filter) is shown below. Here each plot is created using a \pkg{crosstalk} `SharedData` object in place of a standard data frame, and linked together using the `bscols` function:
+
+```{r, eval=FALSE, echo=TRUE}
 library(crosstalk)
 library(Rtsne)
 library(plotly)
 
 data(mnist_embeddings_8d)
 
-# tsne
 ts <- select(mnist_embeddings_8d, starts_with("X")) |>
     Rtsne(num_threads = 4)
-
 Y <- as_tibble(ts$Y)
 names(Y) <- c("Y1", "Y2")
-plot_df <- bind_cols(mnist_embeddings_8d, Y)
 
+plot_df <- bind_cols(mnist_embeddings_8d, Y)
 shared_mnist <- SharedData$new(plot_df)
 
 detour_plot <- detour(shared_mnist, tour_aes(
@@ -149,20 +167,3 @@ bscols(
     widths = c(1, 5, 6)
 )
 ```
-
-```{r linked-tsne-full, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals of the tour using \\\\pkg{detourr} (left) compared to a T-SNE dimension reduction (right)"}
-knitr::include_graphics("figures/mnist/case-study-linked-brushing-full.png")
-```
-
-Figure \@ref(fig:linked-tsne-full) shows the linked visuals in their initial state with no filtering applied. We can then use the selection tool in either of the visuals to highlight points, and see the highlighting applied to both visuals as in Figure \@ref(fig:linked-tsne-selection).
-
-```{r linked-tsne-selection, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals with selection applied. Points can be selected in either visual via click-and-drag and the selection will be reflected in both."}
-knitr::include_graphics("figures/mnist/case-study-linked-brushing-selection.png")
-```
-
-Figure \@ref(fig:linked-tsne-filter) shows the result of filtering the visuals using the filter checkboxes on the left. In the filtered visual, outlying points are much easier to see, and they can be easily investigated using tooltips. 
-
-```{r linked-tsne-filter, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals with filtering applied. Viewing each digit individually makes outlying points much more apparent, and those points can be identified using tooltips."}
-knitr::include_graphics("figures/mnist/case-study-linked-brushing-filter.png")
-```
-

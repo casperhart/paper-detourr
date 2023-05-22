@@ -3,7 +3,7 @@ chapter: 3
 knit: "rmarkdown::render('detourr.rmd')"
 ---
 
-The \pkg{tourr} package implements a functional approach to building tours can be intimidating to new users. Further, the use of the R graphics device and exporting of GIF images limit the interactivity that can be achieved. When designing the user API for \pkg{detourr} a data-oriented approach is taken to make it more approachable, and the visuals are built in JavaScript to enable rich user interactions. \pkg{detourr} also supports the full suite of tour path generating functions from the \pkg{tourr} package. The result is an experience that is powerful, immersive, and accessible to newcomers.
+When designing the user API for \pkg{detourr}, a data-oriented approach is taken to make it approachable, and the visuals are built in JavaScript to enable rich user interactions. \pkg{detourr} also supports the full suite of tour path generating functions from the \pkg{tourr} package. The result is an experience that is feature-rich, immersive, and accessible to newcomers.
 
 This chapter is structured as follows. The first section describes the user API in R and supported features, the second describes how the user can interact with the resulting visual. Throughout the chapter, we use the `pdfSense` dataset (@wang2018mapping; @lee2021liminal) to provide a running example. This data set consists of 2808 observations and 56 input variables from  CT14HERA parton distribution function fits. The first 6 principal components are used to create the tour, accounting for ~55% of the variance in the data. 
 
@@ -54,8 +54,6 @@ These mappings support tidy evaluation and \CRANpkg{tidyselect} syntax (@tidysel
 
 Once the tour is initialised with the data and aesthetics, the tour path is defined by piping the output from `detour()` to the `tour_path()` function. Note that `|>` is the pipe operator introduced in R 4.1:
 
-\pagebreak
-
 ```{r, echo=TRUE}
 p <- p |> tour_path(grand_tour(3))
 p
@@ -102,9 +100,11 @@ The output of `tour_path()` becomes the input of `show_*()`, forming a fluent pi
 - `axes`: whether to show axis / what the axis titles should be
 - `edges`: a two-column numeric matrix defining indices of points where line segments should be drawn between
 - `paused`: whether the animation should be initialised in a paused state.
-- `scale_factor`: used to scale the points in or out so that they appear on a sensible range.
+- `scale_factor`: used to scale the points in or out so that they appear on a sensible range, similar to a zoom function. Defaults to the reciprocal of maximum distance from a point to the origin, so that the points fit inside a unit ball. 
 
 There are also parameters specific to each display method, such as `slice_relative_volume` for `show_slice()`, and `gamma` and `R` for `show_sage()`. These details will be described further in the Display Methods section.
+
+\pagebreak
 
 Putting all of this together, we have:
 
@@ -128,7 +128,7 @@ This chaining process allows us to construct the tour visualisation incrementall
 
 In the above example, labels are defined within the call to `tour_aes()`, which contains all of the aesthetic mappings for the tour. The `label` aesthetic produces a tooltip which is shown whenever the mouse is hovered over the data point. By default, the text in the tooltip will have the format `column_name: value`, with each specified column on a new line. If users want more control over what appears in the tooltip, one can use the `I()` function so that the values in the aesthetic column appear as-is. For example in \@ref(fig:hover-tooltip), the left plot specifies the label aesthetic as `label = c(InFit, Type, ID, pt, x, mu)` and the right is specifies the label as-is by using `label = I(ID)` in the call to `tour_aes()`. When using the `I()` function for the label aesthetic, only one column can be specified at a time.
 
-```{r hover-tooltip, echo = FALSE, out.width="50%", fig.ncol=2, fig.show="hold", fig.cap="(left) Tooltip showing data from the 6 columns specified in the `label` aesthetic. Note that both the column names and values are present in the tooltip. (right) the `ID` column is provided as-is to the label aesthetic via the `I()` function."}
+```{r hover-tooltip, echo = FALSE, out.width="50%", fig.ncol=2, fig.show="hold", fig.cap="(Left) Tooltip showing data from the 6 columns specified in the `label` aesthetic. Note that both the column names and values are present in the tooltip. (Right) The `ID` column is provided as-is to the label aesthetic via the `I()` function."}
 knitr::include_graphics(c(
     "figures/implementation/hover_tooltip.png",
     "figures/implementation/hover_tooltip_asis.png"

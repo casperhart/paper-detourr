@@ -3,7 +3,8 @@ title: "Taking the Scenic Route: Interactive and Performant Tour Animations"
 abstract: >
   The tour provides a useful vehicle for exploring high dimensional datasets. It works by combining a sequence of projections---the tour path---in to an animation---the display method. Current display implementations in R are limited in their interactivity and portability, and give poor performance and jerky animations even for small datasets.
 
-  We take a detour into web technologies, such as Three.js and WebGL, to support smooth and performant tour visualisations. The R package \pkg{detourr} implements a set of display tools using \pkg{htmlwidgets} and TypeScript that allow for rich interactions (including orbit controls, scrubbing, and brushing) and smooth animations for large datasets. It provides a declarative R interface which is accessible to new users, and it supports linked views using \pkg{crosstalk} and \pkg{shiny}. The resulting animations are portable across a wide range of browsers and devices. We also extend the radial transformation of the Sage Tour (@laa2021burning) to 3 or more dimensions with an implementation in 3D, and provide a simplified implementation of the Slice Tour (@laa2020slice).
+  We take a detour into web technologies, such as Three.js and WebGL, to support smooth and performant tour visualisations. The R package \pkg{detourr} implements a set of display tools that allow for rich interactions (including orbit controls, scrubbing, and brushing) and smooth animations for large datasets. It provides a declarative R interface which is accessible to new users, and it supports linked views using \pkg{crosstalk} and \pkg{shiny}. The resulting animations are portable across a wide range of browsers and devices. We also extend the radial transformation of the Sage Tour (@laa2021burning) to 3 or more dimensions with an implementation in 3D, and provide a simplified implementation of the Slice Tour (@laa2020slice).
+  
 draft: true
 author:  
   # see ?rjournal_article for more information
@@ -86,6 +87,16 @@ options(
 
 ```{r, child="07-future-work.Rmd"}
 ```
+
+# Supplementary Material
+
+The package website contains additional documentation with interactive examples and vignettes including a vignette on how to add a new display method to \pkg{detourr}:
+
+- Package Website: [https://casperhart.github.io/detourr](https://casperhart.github.io/detourr/)
+
+The source code for \pkg{detourr} is hosted on GitHub at the following link:
+
+- GitHub: [https://github.com/casperhart/detourr](https://github.com/casperhart/detourr)
 
 \pagebreak
 

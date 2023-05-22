@@ -207,7 +207,7 @@ __HTML5 Canvas (2D)__ uses a canvas element with a 2D rendering context and prov
 
 __HTML5 Canvas (WebGL)__ uses the WebGL rendering context with GPU acceleration to achieve high performance, and is used by a range of browser-based 3D animations and games. This typically provides higher performance than using the 2D canvas rendering context.
 
-{detourr} implements __HTML5 Canvas__ with the __WebGL__ rendering context using the Three.js (@threejs) library. This is the same library that powers the TensorFlow Embedding Projector (@smilkov2016embedding), and allows for flexible and performant 2D and 3D data visuals.
+\pkg{detourr} implements __HTML5 Canvas__ with the __WebGL__ rendering context using the Three.js (@threejs) library. This is the same library that powers the TensorFlow Embedding Projector (@smilkov2016embedding), and allows for flexible and performant 2D and 3D data visuals.
 
 One downside of using HTML5 Canvas elements is that custom logic is needed to determine where the mouse pointer is relative to visual elements when interactions occur. This issue is resolved is by rendering the image twice; the first pass renders to the screen and the second renders to an invisible "picking" scene. The colours of the points in this picking scene correspond to the ID of the point that was rendered. When a mouse is hovered over a pixel or a set of pixels are selected, we simply check their colour in the picking scene to determine which point IDs relate to the event. Rendering the scene twice at each frame makes performance all the more important. 
 

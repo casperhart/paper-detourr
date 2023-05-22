@@ -6,7 +6,7 @@
 
 \abstract{%
 The tour provides a useful vehicle for exploring high dimensional datasets. It works by combining a sequence of projections---the tour path---in to an animation---the display method. Current display implementations in R are limited in their interactivity and portability, and give poor performance and jerky animations even for small datasets.
-We take a detour into web technologies, such as Three.js and WebGL, to support smooth and performant tour visualisations. The R package \pkg{detourr} implements a set of display tools using \pkg{htmlwidgets} and TypeScript that allow for rich interactions (including orbit controls, scrubbing, and brushing) and smooth animations for large datasets. It provides a declarative R interface which is accessible to new users, and it supports linked views using \pkg{crosstalk} and \pkg{shiny}. The resulting animations are portable across a wide range of browsers and devices. We also extend the radial transformation of the Sage Tour (Laa, Cook, and Lee (2021)) to 3 or more dimensions with an implementation in 3D, and provide a simplified implementation of the Slice Tour (Laa, Cook, and Valencia (2020)).
+We take a detour into web technologies, such as Three.js and WebGL, to support smooth and performant tour visualisations. The R package \pkg{detourr} implements a set of display tools that allow for rich interactions (including orbit controls, scrubbing, and brushing) and smooth animations for large datasets. It provides a declarative R interface which is accessible to new users, and it supports linked views using \pkg{crosstalk} and \pkg{shiny}. The resulting animations are portable across a wide range of browsers and devices. We also extend the radial transformation of the Sage Tour (Laa, Cook, and Lee (2021)) to 3 or more dimensions with an implementation in 3D, and provide a simplified implementation of the Slice Tour (Laa, Cook, and Valencia (2020)).
 }
 
 \hypertarget{introduction}{%
@@ -16,9 +16,19 @@ An important first step in any data analysis task is to plot the data so that we
 
 Several methods exist for high dimensional data visualisation. Given a data matrix \(\mathbf X\) we can simply plot each variable \(X_1 \dots X_p\) against the others in a pairwise fashion with the result being a scatterplot matrix (e.g. (Becker and Cleveland 1987)). We can also view projections of our data by calculating \(\mathbf Y = \mathbf X \mathbf A\) where \(\mathbf A\) is a \(p \times d\) projection matrix with \(d\) usually being 1 or 2. We can choose \(\mathbf A\) in several different ways, some examples being Principal Component Analysis (PCA) which chooses the directions which explain the maximum variance, and Linear Descriminant Analysis (LDA) which maximises the ratio of between-group and within-group sums of squares. The scatterplot matrix can also be thought of as a projection method where the projections are parallel to each pair of coordinate axes. These are all examples of \emph{linear dimension reduction} techniques, but non-linear techniques are also available such as t-SNE (Van der Maaten and Hinton 2008) and UMAP (McInnes, Healy, and Melville 2018) that aim to preserve both local and global structure of the data.
 
-Rather than generating a single static visual, the \emph{tour} (Asimov 1985); (Buja et al. 2005) works by combining a smooth sequence of projections in to an animation, which can then be viewed using a variety of different \emph{display methods} (Wickham et al. 2011). This allows the viewer to explore the data from a number of different perspectives while being able to visually connect what would otherwise be disjointed views. However, existing display implementations for tours in R are limited in their interactivity, performance, and portability, and generally result in jerky animations even for small datasets.
+Rather than generating a single static visual, the \emph{tour} (Asimov 1985); (Buja et al. 2005) works by combining a smooth sequence of projections in to an animation, which can then be viewed using a variety of different \emph{display methods} (Wickham et al. 2011). This allows the viewer to explore the data from a number of different perspectives while being able to visually connect what would otherwise be disjointed views. However, existing display implementations for tours in R are limited in their interactivity, performance, and portability, and generally result in jerky animations even for small datasets with only tens or hundreds of observations.
 
 In this paper we introduce a new R package called \CRANpkg{detourr}, which provides portable and performant display methods for tours. In the first section we give a background of tours and review a few existing software implementations, and in the section following we describe how the software is used. We will then highlight some of the implementation decisions related to performance, and later provide a case study using embeddings created from the MNIST (LeCun 1998) dataset. In the final section we will discuss how this work might be extended in future.
+
+\pkg{detourr} is available on CRAN and GitHub, and can be installed using either of the following commands in R:
+
+\begin{verbatim}
+# CRAN
+install.packages("detourr")
+
+# GitHub
+remotes::install_github("casperhart/detourr")
+\end{verbatim}
 
 \hypertarget{background-and-related-works}{%
 \section{Background and related works}\label{background-and-related-works}}
@@ -50,18 +60,18 @@ Furthermore, the data may be transformed after being projected. One consequence 
 \hypertarget{software-implementations}{%
 \subsection{Software implementations}\label{software-implementations}}
 
-The \CRANpkg{tourr} package (Wickham et al. 2011) is the most prevalent and comprehensive software in R (R Core Team 2021) for visualising tours. It implements many of the tour paths described previously including grand, little, guided, frozen, etc. and display methods including scatter plots (with variations for the sage and slice tour), parallel coordinates plots, depth displays, Andrew's plot. The package also allows exporting tours as GIF images via the \CRANpkg{gifski} package (Ooms 2021), or exporting to GGobi (Swayne et al. 2003) to allow for interaction and linked brushing, etc. However, the \CRANpkg{tourr} package uses the R graphics device as the primary display, which is quite limited in performance and interactivity.
+The \CRANpkg{tourr} package (Wickham et al. 2011) is the most prevalent and comprehensive software in R (R Core Team 2021) for visualising tours. It implements many of the tour paths described previously including grand, little, guided, frozen, etc. and display methods including scatter plots (with variations for the sage and slice tour), parallel coordinates plots, depth displays, Andrew's plot. The package also allows exporting tours as GIF images via the \CRANpkg{gifski} package (Ooms 2021), or exporting to GGobi (Swayne et al. 2003) to allow for interaction and linked brushing, etc. However, the \pkg{tourr} package uses the R graphics device as the primary display, which is quite limited in performance and interactivity.
 
-The \CRANpkg{spinifex} package (Spyrison and Cook 2020) provides manual tours built on \CRANpkg{tourr} and using R \CRANpkg{shiny} (Chang et al. 2021), and allows the user to manipulate the contribution of each variable one at a time. The \CRANpkg{liminal} R package (Lee 2021) provides an interactive gadget for displaying tour visuals. Linked selection and brushing is implemented on both visuals, and play / pause / restart controls are provided.
+The \CRANpkg{spinifex} package (Spyrison and Cook 2020) provides manual tours built on \pkg{tourr} and using R \CRANpkg{shiny} (Chang et al. 2021), and allows the user to manipulate the contribution of each variable one at a time. The \CRANpkg{liminal} R package (Lee 2021) provides an interactive gadget for displaying tour visuals. Linked selection and brushing is implemented on both visuals, and play / pause / restart controls are provided.
 
-The \CRANpkg{langevitour} R package instead uses the \CRANpkg{htmlwidgets} package (Vaidyanathan et al. 2021) to display the tour. The main calculations are performed in JavaScript and the points are displayed as a scatter plot using HTML5 Canvas. The displays have good performance so large numbers of data points can be plotted with the animation remaining smooth, and includes interactive features such as drag-and-drop of additional plot elements, and modifying parameters of the tour and having the changes reflected in real time. Once the tour visualisation is generated it then no longer relies on the R runtime so it can be easily exported and embedded on a website for example. But this package is developed with a particular focus of visualising physics dynamics, rather than the more classical tour methods like in \CRANpkg{tourr}.
+The \pkg{langevitour} R package instead uses the \CRANpkg{htmlwidgets} package (Vaidyanathan et al. 2021) to display the tour. The main calculations are performed in JavaScript and the points are displayed as a scatter plot using HTML5 Canvas. The displays have good performance so large numbers of data points can be plotted with the animation remaining smooth, and includes interactive features such as drag-and-drop of additional plot elements, and modifying parameters of the tour and having the changes reflected in real time. Once the tour visualisation is generated it then no longer relies on the R runtime so it can be easily exported and embedded on a website for example. But this package is developed with a particular focus of visualising physics dynamics, rather than the more classical tour methods like in \pkg{tourr}.
 
-(Kipp, Laa, and Cook 2019) uses D3.js (Bostock, Ogievetsky, and Heer 2011) combined with the R \CRANpkg{shiny} (Chang et al. 2021) package to display dynamic tour visualisations. However, this setup had limited performance; the client-server nature of \CRANpkg{shiny} led to inconsistent frame rates, and the number of points that could be drawn was limited to \textless2000 because of the limitations of SVG when drawing many individual elements.
+(Kipp, Laa, and Cook 2019) uses D3.js (Bostock, Ogievetsky, and Heer 2011) combined with the R \CRANpkg{shiny} (Chang et al. 2021) package to display dynamic tour visualisations. However, this setup had limited performance; the client-server nature of \pkg{shiny} led to inconsistent frame rates, and the number of points that could be drawn was limited to \textless2000 because of the limitations of SVG when drawing many individual elements.
 
 \hypertarget{usage-and-interactivity}{%
 \section{Usage and interactivity}\label{usage-and-interactivity}}
 
-The \pkg{tourr} package implements a functional approach to building tours can be intimidating to new users. Further, the use of the R graphics device and exporting of GIF images limit the interactivity that can be achieved. When designing the user API for \pkg{detourr} a data-oriented approach is taken to make it more approachable, and the visuals are built in JavaScript to enable rich user interactions. \pkg{detourr} also supports the full suite of tour path generating functions from the \pkg{tourr} package. The result is an experience that is powerful, immersive, and accessible to newcomers.
+When designing the user API for \pkg{detourr}, a data-oriented approach is taken to make it approachable, and the visuals are built in JavaScript to enable rich user interactions. \pkg{detourr} also supports the full suite of tour path generating functions from the \pkg{tourr} package. The result is an experience that is feature-rich, immersive, and accessible to newcomers.
 
 This chapter is structured as follows. The first section describes the user API in R and supported features, the second describes how the user can interact with the resulting visual. Throughout the chapter, we use the \texttt{pdfSense} dataset (Wang et al. (2018); Lee (2021)) to provide a running example. This data set consists of 2808 observations and 56 input variables from CT14HERA parton distribution function fits. The first 6 principal components are used to create the tour, accounting for \textasciitilde55\% of the variance in the data.
 
@@ -102,15 +112,13 @@ These mappings support tidy evaluation and \CRANpkg{tidyselect} syntax (Henry an
 
 Once the tour is initialised with the data and aesthetics, the tour path is defined by piping the output from \texttt{detour()} to the \texttt{tour\_path()} function. Note that \texttt{\textbar{}\textgreater{}} is the pipe operator introduced in R 4.1:
 
-\pagebreak
-
 \begin{verbatim}
 p <- p |> tour_path(grand_tour(3))
 p
 \end{verbatim}
 
 \begin{verbatim}
-#> # A tibble: 453 x 2
+#> # A tibble: 496 x 2
 #>   is_new_basis projection_matrix
 #>   <lgl>        <list>           
 #> 1 TRUE         <dbl [6 x 3]>    
@@ -118,7 +126,7 @@ p
 #> 3 FALSE        <dbl [6 x 3]>    
 #> 4 FALSE        <dbl [6 x 3]>    
 #> 5 FALSE        <dbl [6 x 3]>    
-#> # ... with 448 more rows
+#> # ... with 491 more rows
 \end{verbatim}
 
 The \texttt{tour\_path()} function defines parameters for the tour such as:
@@ -186,10 +194,12 @@ The output of \texttt{tour\_path()} becomes the input of \texttt{show\_*()}, for
 \item
   \texttt{paused}: whether the animation should be initialised in a paused state.
 \item
-  \texttt{scale\_factor}: used to scale the points in or out so that they appear on a sensible range.
+  \texttt{scale\_factor}: used to scale the points in or out so that they appear on a sensible range, similar to a zoom function. Defaults to the reciprocal of maximum distance from a point to the origin, so that the points fit inside a unit ball.
 \end{itemize}
 
 There are also parameters specific to each display method, such as \texttt{slice\_relative\_volume} for \texttt{show\_slice()}, and \texttt{gamma} and \texttt{R} for \texttt{show\_sage()}. These details will be described further in the Display Methods section.
+
+\pagebreak
 
 Putting all of this together, we have:
 
@@ -216,7 +226,7 @@ Presently, several well-developed R packages allow the use of web technologies i
 In the above example, labels are defined within the call to \texttt{tour\_aes()}, which contains all of the aesthetic mappings for the tour. The \texttt{label} aesthetic produces a tooltip which is shown whenever the mouse is hovered over the data point. By default, the text in the tooltip will have the format \texttt{column\_name:\ value}, with each specified column on a new line. If users want more control over what appears in the tooltip, one can use the \texttt{I()} function so that the values in the aesthetic column appear as-is. For example in \ref{fig:hover-tooltip}, the left plot specifies the label aesthetic as \texttt{label\ =\ c(InFit,\ Type,\ ID,\ pt,\ x,\ mu)} and the right is specifies the label as-is by using \texttt{label\ =\ I(ID)} in the call to \texttt{tour\_aes()}. When using the \texttt{I()} function for the label aesthetic, only one column can be specified at a time.
 
 \begin{figure}
-\includegraphics[width=0.5\linewidth]{figures/implementation/hover_tooltip} \includegraphics[width=0.5\linewidth]{figures/implementation/hover_tooltip_asis} \caption{(left) Tooltip showing data from the 6 columns specified in the `label` aesthetic. Note that both the column names and values are present in the tooltip. (right) the `ID` column is provided as-is to the label aesthetic via the `I()` function.}\label{fig:hover-tooltip}
+\includegraphics[width=0.5\linewidth]{figures/implementation/hover_tooltip} \includegraphics[width=0.5\linewidth]{figures/implementation/hover_tooltip_asis} \caption{(Left) Tooltip showing data from the 6 columns specified in the `label` aesthetic. Note that both the column names and values are present in the tooltip. (Right) The `ID` column is provided as-is to the label aesthetic via the `I()` function.}\label{fig:hover-tooltip}
 \end{figure}
 
 \hypertarget{controls}{%
@@ -345,7 +355,7 @@ When displaying data visuals using JavaScript in a browser, there are three main
 
 \textbf{HTML5 Canvas (WebGL)} uses the WebGL rendering context with GPU acceleration to achieve high performance, and is used by a range of browser-based 3D animations and games. This typically provides higher performance than using the 2D canvas rendering context.
 
-\{detourr\} implements \textbf{HTML5 Canvas} with the \textbf{WebGL} rendering context using the Three.js (Cabello (2010)) library. This is the same library that powers the TensorFlow Embedding Projector (Smilkov et al. (2016)), and allows for flexible and performant 2D and 3D data visuals.
+\pkg{detourr} implements \textbf{HTML5 Canvas} with the \textbf{WebGL} rendering context using the Three.js (Cabello (2010)) library. This is the same library that powers the TensorFlow Embedding Projector (Smilkov et al. (2016)), and allows for flexible and performant 2D and 3D data visuals.
 
 One downside of using HTML5 Canvas elements is that custom logic is needed to determine where the mouse pointer is relative to visual elements when interactions occur. This issue is resolved is by rendering the image twice; the first pass renders to the screen and the second renders to an invisible ``picking'' scene. The colours of the points in this picking scene correspond to the ID of the point that was rendered. When a mouse is hovered over a pixel or a set of pixels are selected, we simply check their colour in the picking scene to determine which point IDs relate to the event. Rendering the scene twice at each frame makes performance all the more important.
 
@@ -359,7 +369,7 @@ There are three display functions implemented in the \pkg{detourr} package: \tex
 \hypertarget{scatter-display}{%
 \subsection{Scatter display}\label{scatter-display}}
 
-The scatter display forms the core of the three display methods, and contains all of the features and interactivities described in previous sections. It is implemented in TypeScript using the Three.js library (Cabello (2010)) for rendering and TensorFlow.js (Abadi et al. (2016)) for linear algebra operations.
+The scatter display forms the core of the three display methods, and contains all of the features and interactions described in previous sections. It is implemented in TypeScript using the Three.js library (Cabello (2010)) for rendering and TensorFlow.js (Abadi et al. (2016)) for linear algebra operations.
 
 \hypertarget{slice-display}{%
 \subsection{Slice display}\label{slice-display}}
@@ -368,10 +378,10 @@ The slice display is implemented in the \texttt{show\_slice()} function, and is 
 
 Despite the slice tour itself being equivalent to that in \pkg{tourr}, the implementation has been modified for a simpler implementation. Laa, Cook, and Valencia (2020) calculates the distance as:
 
-\[
+\begin{equation}
 \tilde \nu_i^2 = ||\mathbf{x}_i^\prime||^2
 \label{eq:nu}
-\]
+\end{equation}
 
 where
 
@@ -429,10 +439,10 @@ With this method there are many terms to calculate, and it was found it was diff
 
 And then calculate the distances to the projection plane similar to equation \eqref{eq:nu2}:
 
-\[
+\begin{equation}
 \tilde \nu^2 = (\mathbf{X}^\prime - \mathbf{X}^\prime \mathbf{AA}^T)^2 \mathbf{1}_p
 \label{eq:nu3}
-\]
+\end{equation}
 
 Figure \ref{fig:slice-sphere} shows a slice tour implemented using equations \eqref{eq:xprime2} and \eqref{eq:nu3} with an anchor of \((1, 0, 0)\). Initially \(v_1\) is almost parallel to the projection plane, and so the slice runs close to the origin and only the points near the outside of the hollow sphere are highlighted. As the tour progresses, \(v_1\) becomes nearly orthogonal to the projection plane, and so the slice runs close to the edge of the sphere and only a small number of points near the centre of the visual are highlighted.
 
@@ -442,7 +452,7 @@ Figure \ref{fig:slice-sphere} shows a slice tour implemented using equations \eq
 
 }
 
-\caption{Selected frames of a 2D slice tour of a hollow sphere. The anchor for the slice is set to (1, 0, 0). Initially the slice is near the origin, but moves closer to the edge of the sphere as v1 rotates to be near orthogonal to the projection plane.}\label{fig:slice-sphere}
+\caption{Selected frames of a 2D slice tour of a hollow unit sphere. The anchor for the slice is set to (1, 0, 0). Initially the slice is near the origin, but moves closer to the edge of the sphere as v1 rotates to be near orthogonal to the projection plane.}\label{fig:slice-sphere}
 \end{figure}
 
 \hypertarget{sage-display}{%
@@ -453,17 +463,6 @@ As the dimension of data increases, the volume of space that contains the data i
 \begin{equation}
 d(p, N) = \left( 1- \frac{1}{2}^\frac{1}{N}\right)^\frac{1}{p}
 \end{equation}
-
-This is shown in Figure \ref{fig:med-dist} where we see that if we have 100 points uniformly distributed in a \(p\)-ball in \(p=40\) dimensional space, the median distance from the origin to the closest will be at \(r > 0.8\).
-
-\begin{figure}
-
-{\centering \includegraphics[width=0.75\linewidth]{detourr_files/figure-latex/med-dist-1} 
-
-}
-
-\caption{The median distance from the origin to the closest point increases with p, showing that uniform points in high dimensions tend to sit close to the boundary of the space they occupy.}\label{fig:med-dist}
-\end{figure}
 
 Counter-intuitively, when we project data from a high-dimensional space to low-dimensions, we see the opposite effect where points tend to crowd towards the center of the projected space. Laa, Cook, and Lee (2021) describes a method for correcting this distortion so that points are less crowded towards the center. It does this by ensuring the relative volume at a given radius \(r\) in the original space is preserved in the projected space. The relative volume for a 2-dimensional projection is given by the equation
 
@@ -483,7 +482,7 @@ r_y^\prime = R \sqrt{1 - \left(1-\left(\frac{r}{R}\right)^2\right)^\frac{p}{2}}
 \label{eq:radial2d}
 \end{equation}
 
-\{detourr\} uses a slight variation of equation \eqref{eq:radial2d} to calculate the corrected radius, which omits the multiplier of \(R\). This is because we always plot the data on the range \(r_y^\prime = [0, 1]\), so the multiplier is not needed:
+\pkg{detourr} uses a slight variation of equation \eqref{eq:radial2d} to calculate the corrected radius, which omits the multiplier of \(R\). This is because we always plot the data on the range \(r_y^\prime = [0, 1]\), so the multiplier is not needed:
 
 \begin{equation}
 r_y^\prime = \sqrt{1 - \left(1-\left(\frac{r}{R}\right)^2\right)^\frac{p}{2}}
@@ -500,15 +499,15 @@ The full implementation is as follows:
 \item
   Calculate the trimmed radius of the projected points \(r_y^\mathrm{trim} = min(r_y, R)\) and apply the radial transformation described in equation \eqref{eq:radial2d2} to get the corrected radius \(r_y^\prime\).
 \item
-  Scale the original euclidean coordinates by a factor of \(\frac{r_y^\prime}{r_y}\)
+  Scale the Euclidean point vectors by a factor of \(\frac{r_y^\prime}{r_y}\)
 \end{enumerate}
 
-This differs from the original implementation described in Laa, Cook, and Lee (2021) in that we don't convert the Euclidean coordinates to polar coordinates, and instead apply the scaling directly to the Euclidean coordinates. This removal of the conversion step was primarily to improve performance.
+This differs from the original implementation described in Laa, Cook, and Lee (2021) in that we don't convert the Euclidean vectors to polar form, and instead apply the scaling directly to the Euclidean vectors. This removal of the conversion step was primarily to improve performance.
 
 \hypertarget{extension-to-3d}{%
 \subsubsection{Extension to 3D}\label{extension-to-3d}}
 
-Laa, Cook, and Lee (2021) provides the equation for the relative projected volume at radius \(r\) on to a two dimensional disk for the 2-dimensional sage display. In this thesis, we extend and implement the scatter, sage, and slice displays in 3D, and to do this we needed to calculate the relative projected volume for the case of a 3-dimensional projection.
+Laa, Cook, and Lee (2021) provides the equation for the relative projected volume at radius \(r\) on to a two dimensional disk for the 2-dimensional sage display. In this paper, we extend and implement the scatter, sage, and slice displays in 3D, and to do this we needed to calculate the relative projected volume for the case of a 3-dimensional projection.
 
 In the appendix we show that the relative projected volume for a \textbf{sphere} at radius \(r\) is given by:
 
@@ -544,7 +543,7 @@ An example of the 3D sage tour is shown in Figure \ref{fig:sage-sphere}.
 
 }
 
-\caption{(top) Initial frames of a 3D scatter tour of a 3, 10, and 50 dimensional ball respectively from left to right. (Bottom) Selected frames of a 3D sage tour of similar 3, 10, and 50 dimensional balls. As the dimensionality increases, the standard scatter display crowds the points near the center, whereas the sage display shows a consistent radial distribution of points. All screenshots are at the same zoom level.}\label{fig:sage-sphere}
+\caption{(Top) Initial frames of a 3D scatter tour of a 3, 10, and 50 dimensional ball respectively from left to right. (Bottom) Selected frames of a 3D sage tour of similar 3, 10, and 50 dimensional balls. As the dimensionality increases, the standard scatter display crowds the points near the center, whereas the sage display shows a consistent radial distribution of points. All screenshots are at the same zoom level.}\label{fig:sage-sphere}
 \end{figure}
 
 \hypertarget{case-study-mnist-embeddings}{%
@@ -594,7 +593,7 @@ The \emph{sage} display scales points outwards based on their radius so that the
 
 }
 
-\caption{selected frames of the 8-dimensional MNIST embeddings data using show\_slice() as the display method. The slice display makes the hollowness of this data apparent.}\label{fig:mnist-8d-slice}
+\caption{Selected frames of the 8-dimensional MNIST embeddings data using show\_slice() as the display method. The slice display makes the hollowness of this data apparent.}\label{fig:mnist-8d-slice}
 \end{figure}
 
 The \emph{slice} display highlights points based on their proximity to the projection plane. Points that are close to the projection plane are highlighted and those further away are faded out by making them transparent. In the case of the MNIST embedding data in Figure \ref{fig:mnist-8d-slice} the ball structure of the data manifests as a clear circular void in the middle of the plot, with points highlighted only towards the edges.
@@ -605,7 +604,7 @@ The \emph{slice} display highlights points based on their proximity to the proje
 Plot interactions such as selection and filtering can be helpful for identifying and exploring outliers, clusters, and other interesting features in a dataset. These are enhanced even further when multiple visuals are linked, and selections and filters are applied to all linked visuals. In this example, we compare the tour animation with the result of a T-SNE (Van der Maaten and Hinton (2008)) which was performed using the excellent \CRANpkg{Rtsne} R package (Krijthe (2015)) and displayed using \pkg{plotly}. The visuals are linked using the R package \pkg{crosstalk} and a set of filter checkboxes is also added.
 
 \begin{figure}
-\includegraphics[width=\textwidth]{figures/mnist/case-study-linked-brushing-full} \caption{Linked visuals of the tour using \\pkg{detourr} (left) compared to a T-SNE dimension reduction (right)}\label{fig:linked-tsne-full}
+\includegraphics[width=\textwidth]{figures/mnist/case-study-linked-brushing-full} \caption{Linked visuals of the tour using detourr (left) compared to a T-SNE dimension reduction (right)}\label{fig:linked-tsne-full}
 \end{figure}
 
 Figure \ref{fig:linked-tsne-full} shows the linked visuals in their initial state with no filtering applied. We can then use the selection tool in either of the visuals to highlight points, and see the highlighting applied to both visuals as in Figure \ref{fig:linked-tsne-selection}.
@@ -619,6 +618,52 @@ Figure \ref{fig:linked-tsne-filter} shows the result of filtering the visuals us
 \begin{figure}
 \includegraphics[width=\textwidth]{figures/mnist/case-study-linked-brushing-filter} \caption{Linked visuals with filtering applied. Viewing each digit individually makes outlying points much more apparent, and those points can be identified using tooltips.}\label{fig:linked-tsne-filter}
 \end{figure}
+
+\pagebreak
+
+The code used to produce figures \ref{fig:linked-tsne-full}, \ref{fig:linked-tsne-selection}, and \ref{fig:linked-tsne-filter} is shown below. Here each plot is created using a \pkg{crosstalk} \texttt{SharedData} object in place of a standard data frame, and linked together using the \texttt{bscols} function:
+
+\begin{verbatim}
+library(crosstalk)
+library(Rtsne)
+library(plotly)
+
+data(mnist_embeddings_8d)
+
+ts <- select(mnist_embeddings_8d, starts_with("X")) |>
+    Rtsne(num_threads = 4)
+Y <- as_tibble(ts$Y)
+names(Y) <- c("Y1", "Y2")
+
+plot_df <- bind_cols(mnist_embeddings_8d, Y)
+shared_mnist <- SharedData$new(plot_df)
+
+detour_plot <- detour(shared_mnist, tour_aes(
+    projection = starts_with("X"), color = label,
+    label = c(id, label),
+)) |>
+    tour_path(grand_tour(2)) |>
+    show_sage(width = "100%", height = "450px")
+
+tsne_plot <- plot_ly(shared_mnist,
+    x = ~Y1,
+    y = ~Y2,
+    text = paste0("Label: ", plot_df$label, "<br>", "ID: ", plot_df$id),
+    color = ~label,
+    height = 450,
+    colors = viridisLite::viridis(10)
+) |>
+    highlight(on = "plotly_selected", off = "plotly_doubleclick") |>
+    add_trace(type = "scatter", mode = "markers")
+
+bscols(
+    list(
+        filter_checkbox("label", "Label", shared_mnist, ~label)
+    ),
+    detour_plot, tsne_plot,
+    widths = c(1, 5, 6)
+)
+\end{verbatim}
 
 \hypertarget{conclusion-and-future-work}{%
 \section{Conclusion and future work}\label{conclusion-and-future-work}}
@@ -636,6 +681,25 @@ As well as being able to display points and lines, support for plotting surfaces
 Support for displaying images or sprites directly on the tour visual or as an extension of the tooltip functionality is possible. A similar feature is implemented in the Tensorboard Embedding Visualiser (Smilkov et al. (2016)) which also uses Three.js under the hood.
 
 What's more, Three.js has support for VR, which would be an interesting addition for exploring an immersive 3D tour visual.
+
+\hypertarget{supplementary-material}{%
+\section{Supplementary Material}\label{supplementary-material}}
+
+The package website contains additional documentation with interactive examples and vignettes including a vignette on how to add a new display method to \pkg{detourr}:
+
+\begin{itemize}
+\tightlist
+\item
+  Package Website: \href{https://casperhart.github.io/detourr/}{https://casperhart.github.io/detourr}
+\end{itemize}
+
+The source code for \pkg{detourr} is hosted on GitHub at the following link:
+
+\begin{itemize}
+\tightlist
+\item
+  GitHub: \url{https://github.com/casperhart/detourr}
+\end{itemize}
 
 \pagebreak
 

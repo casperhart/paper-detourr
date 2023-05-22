@@ -27,6 +27,12 @@ options(
 
 ## ---- child="01-introduction.Rmd"---------------------------------------------
 
+## ---- eval=FALSE, echo=TRUE---------------------------------------------------
+#> # CRAN
+#> install.packages("detourr")
+#> 
+#> # GitHub
+#> remotes::install_github("casperhart/detourr")
 
 
 
@@ -91,7 +97,7 @@ knitr::include_graphics("figures/implementation/pdfsense_scatter_3d.png")
 #>     show_scatter()
 
 
-## ----hover-tooltip, echo = FALSE, out.width="50%", fig.ncol=2, fig.show="hold", fig.cap="(left) Tooltip showing data from the 6 columns specified in the `label` aesthetic. Note that both the column names and values are present in the tooltip. (right) the `ID` column is provided as-is to the label aesthetic via the `I()` function."----
+## ----hover-tooltip, echo = FALSE, out.width="50%", fig.ncol=2, fig.show="hold", fig.cap="(Left) Tooltip showing data from the 6 columns specified in the `label` aesthetic. Note that both the column names and values are present in the tooltip. (Right) The `ID` column is provided as-is to the label aesthetic via the `I()` function."----
 knitr::include_graphics(c(
     "figures/implementation/hover_tooltip.png",
     "figures/implementation/hover_tooltip_asis.png"
@@ -331,28 +337,12 @@ ggplot(benchmarks, aes(x = Backend, y = `Percent Time`, fill = `Data Set`)) +
 #>     show_slice(anchor = c(1, 0, 0))
 
 
-## ----slice-sphere, out.width="32%", fig.ncol=3, fig.show="hold", fig.align="center", fig.cap="Selected frames of a 2D slice tour of a hollow sphere. The anchor for the slice is set to (1, 0, 0). Initially the slice is near the origin, but moves closer to the edge of the sphere as v1 rotates to be near orthogonal to the projection plane."----
+## ----slice-sphere, out.width="32%", fig.ncol=3, fig.show="hold", fig.align="center", fig.cap="Selected frames of a 2D slice tour of a hollow unit sphere. The anchor for the slice is set to (1, 0, 0). Initially the slice is near the origin, but moves closer to the edge of the sphere as v1 rotates to be near orthogonal to the projection plane."----
 knitr::include_graphics(c(
     "figures/display_methods/slice_sphere_1.png",
     "figures/display_methods/slice_sphere_2.png",
     "figures/display_methods/slice_sphere_3.png"
 ))
-
-
-## ----med-dist, fig.cap="The median distance from the origin to the closest point increases with p, showing that uniform points in high dimensions tend to sit close to the boundary of the space they occupy.", out.width="75%", fig.align="center"----
-d <- function(p, n) {
-    (1 - 0.5^(1 / n))^(1 / p)
-}
-
-ggplot() +
-    geom_function(fun = function(p) d(p, 100)) +
-    scale_x_continuous(limits = c(2, 50)) +
-    scale_y_continuous(limits = c(0, 1)) +
-    labs(
-        x = "p", y = "d(p, N)",
-        title = "Median distance from origin to closest point (N=100)"
-    ) +
-    theme_bw()
 
 
 ## ---- eval=FALSE, echo=FALSE--------------------------------------------------
@@ -377,7 +367,7 @@ ggplot() +
 #> p |> show_sage(axes = FALSE)
 
 
-## ----sage-sphere, out.width="32%", fig.ncol=3, fig.show="hold", fig.align="center", fig.cap="(top) Initial frames of a 3D scatter tour of a 3, 10, and 50 dimensional ball respectively from left to right. (Bottom) Selected frames of a 3D sage tour of similar 3, 10, and 50 dimensional balls. As the dimensionality increases, the standard scatter display crowds the points near the center, whereas the sage display shows a consistent radial distribution of points. All screenshots are at the same zoom level."----
+## ----sage-sphere, out.width="32%", fig.ncol=3, fig.show="hold", fig.align="center", fig.cap="(Top) Initial frames of a 3D scatter tour of a 3, 10, and 50 dimensional ball respectively from left to right. (Bottom) Selected frames of a 3D sage tour of similar 3, 10, and 50 dimensional balls. As the dimensionality increases, the standard scatter display crowds the points near the center, whereas the sage display shows a consistent radial distribution of points. All screenshots are at the same zoom level."----
 knitr::include_graphics(c(
     "figures/display_methods/scatter_sphere_3.png",
     "figures/display_methods/scatter_sphere_10.png",
@@ -460,7 +450,7 @@ knitr::include_graphics(
 #>     show_slice()
 
 
-## ----mnist-8d-slice, out.width="49%", fig.ncol=3, fig.show="hold", fig.align="center", fig.cap="selected frames of the 8-dimensional MNIST embeddings data using show\\_slice() as the display method. The slice display makes the hollowness of this data apparent."----
+## ----mnist-8d-slice, out.width="49%", fig.ncol=3, fig.show="hold", fig.align="center", fig.cap="Selected frames of the 8-dimensional MNIST embeddings data using show\\_slice() as the display method. The slice display makes the hollowness of this data apparent."----
 knitr::include_graphics(
     c(
         "figures/mnist/mnist-8d-slice-1.png",
@@ -469,21 +459,31 @@ knitr::include_graphics(
 )
 
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----linked-tsne-full, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals of the tour using detourr (left) compared to a T-SNE dimension reduction (right)"----
+knitr::include_graphics("figures/mnist/case-study-linked-brushing-full.png")
+
+
+## ----linked-tsne-selection, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals with selection applied. Points can be selected in either visual via click-and-drag and the selection will be reflected in both."----
+knitr::include_graphics("figures/mnist/case-study-linked-brushing-selection.png")
+
+
+## ----linked-tsne-filter, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals with filtering applied. Viewing each digit individually makes outlying points much more apparent, and those points can be identified using tooltips."----
+knitr::include_graphics("figures/mnist/case-study-linked-brushing-filter.png")
+
+
+## ---- eval=FALSE, echo=TRUE---------------------------------------------------
 #> library(crosstalk)
 #> library(Rtsne)
 #> library(plotly)
 #> 
 #> data(mnist_embeddings_8d)
 #> 
-#> # tsne
 #> ts <- select(mnist_embeddings_8d, starts_with("X")) |>
 #>     Rtsne(num_threads = 4)
-#> 
 #> Y <- as_tibble(ts$Y)
 #> names(Y) <- c("Y1", "Y2")
-#> plot_df <- bind_cols(mnist_embeddings_8d, Y)
 #> 
+#> plot_df <- bind_cols(mnist_embeddings_8d, Y)
 #> shared_mnist <- SharedData$new(plot_df)
 #> 
 #> detour_plot <- detour(shared_mnist, tour_aes(
@@ -511,18 +511,6 @@ knitr::include_graphics(
 #>     detour_plot, tsne_plot,
 #>     widths = c(1, 5, 6)
 #> )
-
-
-## ----linked-tsne-full, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals of the tour using \\\\pkg{detourr} (left) compared to a T-SNE dimension reduction (right)"----
-knitr::include_graphics("figures/mnist/case-study-linked-brushing-full.png")
-
-
-## ----linked-tsne-selection, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals with selection applied. Points can be selected in either visual via click-and-drag and the selection will be reflected in both."----
-knitr::include_graphics("figures/mnist/case-study-linked-brushing-selection.png")
-
-
-## ----linked-tsne-filter, out.width=ifelse(knitr::is_html_output(), "100%", "\\textwidth"), fig.cap="Linked visuals with filtering applied. Viewing each digit individually makes outlying points much more apparent, and those points can be identified using tooltips."----
-knitr::include_graphics("figures/mnist/case-study-linked-brushing-filter.png")
 
 
 
