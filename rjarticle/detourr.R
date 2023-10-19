@@ -355,7 +355,7 @@ knitr::include_graphics(c(
 #>     # project points on to surface of unit ball
 #>     df <- t(apply(df, 1, function(x) x / sqrt(sum(x^2))))
 #> 
-#>     # scale in to form a uniform distribution in the p-ball
+#>     # scale into form a uniform distribution in the p-ball
 #>     t(apply(df, 1, function(x) x * (runif(1)^(1 / p)))) |> as_tibble()
 #> }
 #> 
@@ -534,7 +534,7 @@ get_sim_data <- function(p, d, n = 5000) {
   # project points on to surface of unit ball
   r_unif_pball <- t(apply(r_unif_pball, 1, function(x) x / sqrt(sum(x^2))))
 
-  # scale in to form a uniform distibution in the p-ball
+  # scale into form a uniform distibution in the p-ball
   r_unif_pball <- r_unif_pball * runif(n)^(1 / p)
   # rand_unif_p_ball <- t(apply(rand_unif_p_ball, 1, function(x) x * (1 - runif(1)^p)))
 
@@ -553,7 +553,7 @@ get_sim_data <- function(p, d, n = 5000) {
 }
 
 
-## ---- radial-cdf-p, fig.cap = "Relative projected volume for projections from p dimensions to d=3 dimensions. The solid line is simulated data, and the dashed line is the theoretical CDF", out.width="75%", fig.align="center"----
+## ---- radial-cdf-p, fig.cap = "Relative projected volume for projections from p dimensions to d=3 dimensions. The solid line is simulated data, and the dashed line is the theoretical CDF", out.width="70%", fig.align="center"----
 plot_data <- bind_rows(
   get_sim_data(p = 5, d = 3),
   get_sim_data(p = 10, d = 3),
@@ -571,7 +571,7 @@ ggplot(plot_data, aes(x = r, group = p, colour = p)) +
   )
 
 
-## ---- radial-cdf-d, fig.cap = "Relative projected volume for a projection of p=10 dimensions to d dimensions.  The solid line is simulated data, and the dashed line is the theoretical CDF. This shows the generalisation to d > 3 dimensions", out.width="75%", fig.align="center"----
+## ---- radial-cdf-d, fig.cap = "Relative projected volume for a projection of p=10 dimensions to d dimensions.  The solid line is simulated data, and the dashed line is the theoretical CDF. This shows the generalisation to d > 3 dimensions", out.width="70%", fig.align="center"----
 plot_data <- bind_rows(
   get_sim_data(p = 10, d = 2),
   get_sim_data(p = 10, d = 3),

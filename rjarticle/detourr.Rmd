@@ -1,7 +1,7 @@
 ---
 title: "Taking the Scenic Route: Interactive and Performant Tour Animations"
 abstract: >
-  The tour provides a useful vehicle for exploring high dimensional datasets. It works by combining a sequence of projections---the tour path---in to an animation---the display method. Current display implementations in R are limited in their interactivity and portability, and give poor performance and jerky animations even for small datasets.
+  The tour provides a useful vehicle for exploring high dimensional datasets. It works by combining a sequence of projections---the tour path---into an animation---the display method. Current display implementations in R are limited in their interactivity and portability, and give poor performance and jerky animations even for small datasets.
 
   We take a detour into web technologies, such as Three.js and WebGL, to support smooth and performant tour visualisations. The R package \pkg{detourr} implements a set of display tools that allow for rich interactions (including orbit controls, scrubbing, and brushing) and smooth animations for large datasets. It provides a declarative R interface which is accessible to new users, and it supports linked views using \pkg{crosstalk} and \pkg{shiny}. The resulting animations are portable across a wide range of browsers and devices. We also extend the radial transformation of the Sage Tour (@laa2021burning) to 3 or more dimensions with an implementation in 3D, and provide a simplified implementation of the Slice Tour (@laa2020slice).
   
@@ -21,7 +21,6 @@ output:
   rjtools::rjournal_web_article:
     self_contained: yes
     toc: no
-    number_sections: no
 bibliography: detourr.bib
 header-includes:
   - \usepackage{tabu}

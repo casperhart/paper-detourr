@@ -63,7 +63,7 @@ The `tour_path()` function defines parameters for the tour such as:
 
 - `tour_path`: the tour path generator, e.g. `grand_tour()`, `guided_tour()`, or any other path generator compatible with the \pkg{tourr} package
 - `start`: the starting basis or projection matrix
-- `fps`: frames per second with which to display the animation. Defaults to 30 but can be increased for a smoother animation or decreased for very large data.
+- `fps`: frames per second with which to display the animation. Defaults to 30 but can be increased for a smoother animation or decreased for very large datasets.
 - `max_bases`:  the number of basis frames to generate. A higher number will give a longer tour animation.
 
 The resulting `detour` object is stored in a standard data frame for easy consumption and inspection. It contains the full details of the tour path, where the $i^{th}$ row corresponds to the $i^{th}$ animation frame of the tour, with the following columns:
@@ -122,7 +122,7 @@ This chaining process allows us to construct the tour visualisation incrementall
 
 ## Interactivity
 
- Presently, several well-developed R packages allow the use of web technologies in R; \pkg{htmlwidgets} allows binding R code with HTML and JavaScript to create standalone widgets; \pkg{shiny} provides features for combining various elements in to interactive web applications powered by R; \CRANpkg{crosstalk} (@crosstalk) enables linked selection and brushing between different HTML Widgets; and \CRANpkg{rmarkdown} (@rmarkdown) allows creating HTML documents with HTML Widgets embedded within. The use of web technologies such as JavaScript enable the resulting visuals to be portable and accessible, and enable the implementation of rich interactive features. In this section we will describe these interactive features and how they can be configured.
+ Presently, several well-developed R packages allow the use of web technologies in R; \pkg{htmlwidgets} allows binding R code with HTML and JavaScript to create standalone widgets; \pkg{shiny} provides features for combining various elements into interactive web applications powered by R; \CRANpkg{crosstalk} (@crosstalk) enables linked selection and brushing between different HTML Widgets; and \CRANpkg{rmarkdown} (@rmarkdown) allows creating HTML documents with HTML Widgets embedded within. The use of web technologies such as JavaScript enable the resulting visuals to be portable and accessible, and enable the implementation of rich interactive features. In this section we will describe these interactive features and how they can be configured.
 
 ### Label aesthetics
 
