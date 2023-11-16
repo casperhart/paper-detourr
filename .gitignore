@@ -6,3 +6,12 @@ detourr_files
 *.log
 
 .DS_STORE
+
+*.log
+*.aux
+*.bcf
+*.out
+*.bbl
+*.blg
+*.brf
+cache/
